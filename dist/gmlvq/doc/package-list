@@ -1,0 +1,6 @@
+weka.classifiers.functions
+weka.classifiers.functions.gmlvq.core
+weka.classifiers.functions.gmlvq.core.cost
+weka.classifiers.functions.gmlvq.model
+weka.classifiers.functions.gmlvq.utilities
+weka.classifiers.functions.gmlvq.visualization
