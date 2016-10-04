@@ -14,10 +14,10 @@ public class GMLVQDrawStuffTest {
 
     @Before
     public void setup() throws Exception {
-        this.instances = TestUtils.loadDataset("polyhedral_pmid_27296169.arff");
+        this.instances = TestUtils.loadDataset("tecatorD.arff");
         // this.dataPoints = WekaModelConverter.createDataPoints(instances);
         this.glmvq = new GMLVQ();
-        this.glmvq.setDataPointRatioPerRound(1.0);
+        this.glmvq.setDataPointRatioPerRound(0.5);
         this.glmvq.setNumberOfPrototypesPerClass(1);
         // this.glmvq.setOmegaDimension(5);
         this.glmvq.setVisualization(true);

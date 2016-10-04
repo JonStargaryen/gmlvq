@@ -17,6 +17,7 @@ import javax.swing.JTextPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations;
 import weka.core.matrix.Matrix;
 
 public class FeatureImpactPanel extends JPanel {
@@ -26,18 +27,19 @@ public class FeatureImpactPanel extends JPanel {
     private String[] attributeNames;
     private Matrix lambdaMatrix;
     private SortedSet<Entry<String, Double>> featureImportance;
-    DefaultTableModel tableModel;
+    private DefaultTableModel tableModel;
 
-    ColorScale multiColorScale;
+    private ColorScale colorScale;
 
-    public FeatureImpactPanel(String[] attributeNames) {
+    public FeatureImpactPanel(String[] attributeNames, ColorScale colorScale) {
         this.attributeNames = attributeNames;
-        initializeInterface();
+        this.colorScale = colorScale;
+        initializeInterface(colorScale);
     }
 
-    private void initializeInterface() {
+    private void initializeInterface(ColorScale colorScale) {
         this.setLayout(new BorderLayout());
-
+        this.colorScale = colorScale;
         JTextPane descriptionPane = new JTextPane();
         descriptionPane.setText("This table contains the 15 features from the main diagonal with the largest values."
                 + "Therefore, the first entry in the table is the feature that influences the classification and"
@@ -60,7 +62,7 @@ public class FeatureImpactPanel extends JPanel {
             public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int columnIndex) {
                 JComponent component = (JComponent) super.prepareRenderer(renderer, rowIndex, columnIndex);
                 if (columnIndex == 0) {
-                    component.setBackground(FeatureImpactPanel.this.multiColorScale
+                    component.setBackground(FeatureImpactPanel.this.colorScale
                             .getColor(Float.valueOf(getValueAt(rowIndex, 2).toString())));
                 } else {
                     component.setBackground(FeatureImpactPanel.this.getBackground());
@@ -85,8 +87,12 @@ public class FeatureImpactPanel extends JPanel {
     public void setLambdaMatrix(Matrix lambdaMatrix) {
         this.lambdaMatrix = lambdaMatrix;
         this.extractAndSortFeatures();
-        this.multiColorScale = new ColorScale.Builder(this.featureImportance.last().getValue().floatValue(),
-                this.featureImportance.first().getValue().floatValue()).build();
+
+        double[] minAndMaxValues = LinearAlgebraicCalculations.getMinAndMaxValuesFromMatrix(lambdaMatrix.copy());
+        float minValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MINIMAL_INDEX];
+        float maxValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MAXIMAL_INDEX];
+        this.colorScale = new ColorScale.Builder(minValue, maxValue).build();
+
         String[] cols = { "color", "feature", "value" };
         Iterator<Entry<String, Double>> it = this.featureImportance.iterator();
         int maxFeatureIndex = 15;

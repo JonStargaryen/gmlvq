@@ -16,7 +16,7 @@ public class MatrixRenderer implements Serializable {
     private LambdaMatrixPanel parent;
     private Matrix lambdaMatrix;
     // private Graphics2D graphics;
-    private ColorScale multiColorScale;
+    private ColorScale colorScale;
 
     // options
     private boolean showScale;
@@ -33,8 +33,9 @@ public class MatrixRenderer implements Serializable {
 
     private DecimalFormat decimalFormat = new DecimalFormat("0.000");
 
-    public MatrixRenderer(LambdaMatrixPanel lambdaMatrixPanel) {
+    public MatrixRenderer(LambdaMatrixPanel lambdaMatrixPanel, ColorScale colorScale) {
         this.parent = lambdaMatrixPanel;
+        this.colorScale = colorScale;
         // this.graphics = (Graphics2D) this.parent.getGraphics();
         this.showScale = true;
     }
@@ -48,7 +49,7 @@ public class MatrixRenderer implements Serializable {
         for (int rowIndex = 0; rowIndex < this.lambdaMatrix.getRowDimension(); rowIndex++) {
             for (int colIndex = 0; colIndex < this.lambdaMatrix.getColumnDimension(); colIndex++) {
                 double matrixElementValue = this.lambdaMatrix.get(rowIndex, colIndex);
-                Color matrixElementColor = this.multiColorScale.getColor(new Double(matrixElementValue).floatValue());
+                Color matrixElementColor = this.colorScale.getColor(new Double(matrixElementValue).floatValue());
                 graphics.setPaint(matrixElementColor);
                 graphics.fillRect(this.matrixMarginHorizontal / 2 + this.matrixElementSize * rowIndex,
                         this.matrixMarginVertical / 2 + this.matrixElementSize * colIndex, this.matrixElementSize,
@@ -66,11 +67,11 @@ public class MatrixRenderer implements Serializable {
         int xStart = this.matrixMarginHorizontal * 2 / 3 + this.matrixElementSize * this.rowDimension;
         graphics.setFont(new Font("Courier New", Font.CENTER_BASELINE, 16));
 
-        float currentValue = this.multiColorScale.getMaximalValue();
+        float currentValue = this.colorScale.getMaximalValue();
 
         for (int scaleElementIndex = 0; scaleElementIndex < 100; scaleElementIndex++) {
-            currentValue -= (this.multiColorScale.getMaximalValue() - this.multiColorScale.getMinimalValue()) / 100f;
-            graphics.setPaint(this.multiColorScale.getColor(currentValue));
+            currentValue -= (this.colorScale.getMaximalValue() - this.colorScale.getMinimalValue()) / 100f;
+            graphics.setPaint(this.colorScale.getColor(currentValue));
             graphics.fillRect(xStart, legendScaleHorizontalMargin / 2 + scaleElementIndex * legendScaleElementHeight,
                     legendScaleDrawWidth, legendScaleElementHeight);
             // draw tick text
@@ -82,8 +83,8 @@ public class MatrixRenderer implements Serializable {
         }
 
         // draw zero tick = horizontal marign + scale height *
-        double positionFactor = this.multiColorScale.getMaximalValue()
-                / (this.multiColorScale.getMaximalValue() - this.multiColorScale.getMinimalValue());
+        double positionFactor = this.colorScale.getMaximalValue()
+                / (this.colorScale.getMaximalValue() - this.colorScale.getMinimalValue());
         int zeroPosition = (int) (legendScaleHorizontalMargin / 2.0 + legendScaleElementHeight * 100 * positionFactor);
         graphics.setPaint(Color.BLACK);
         graphics.drawString(this.decimalFormat.format(0.0), xStart + legendScaleDrawWidth + 10, zeroPosition);
@@ -94,7 +95,7 @@ public class MatrixRenderer implements Serializable {
         double[] minAndMaxValues = LinearAlgebraicCalculations.getMinAndMaxValuesFromMatrix(this.lambdaMatrix.copy());
         float minValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MINIMAL_INDEX];
         float maxValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MAXIMAL_INDEX];
-        this.multiColorScale = new ColorScale.Builder(minValue, maxValue).build();
+        this.colorScale = new ColorScale.Builder(minValue, maxValue).build();
 
         // determine ideal matrix size
         this.matrixDrawWidth = (int) (this.parent.getWidth() * 0.9);
