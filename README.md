@@ -45,10 +45,13 @@ input data which contribute the most to the training process. This is realized b
  between the corresponding features.
  
  ## The UI
+ 
  Coming soon!
  
  ## Running GMLVQ
+ 
  Coming soon!
  
- ## Literature & Refernces
+ ## Literature & References
+ 
  Coming soon!
