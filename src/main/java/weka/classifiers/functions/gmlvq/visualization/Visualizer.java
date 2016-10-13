@@ -20,6 +20,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
 import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.Prototype;
+import weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations;
 import weka.core.matrix.Matrix;
 
 public class Visualizer extends JFrame {
@@ -33,29 +34,17 @@ public class Visualizer extends JFrame {
     private FeatureImpactPanel panelFeatureInfluence;
     private FeatureAnalysisPanel panelFeatureAnalysis;
 
+    private ColorScale colorScale;
+
     // gui components
     private JCheckBox checkBoxShowScale;
     private JButton buttonExport;
 
-    // public Visualizer() {
-    // // FIXME temporary variables
-    // String[] attributeNames = new String[] { "a1", "a2" };
-    // this.panelLambdaMatrix = new LambdaMatrixPanel(attributeNames);
-    // List<CostFunction> functions = new ArrayList<CostFunction>();
-    // functions.add(new DefaultCostFunction(new SigmoidFunction(0.0, 1.0,
-    // 200)));
-    // functions.add(new ClassificationErrorFunction(new SigmoidFunction(0.0,
-    // 1.0, 200)));
-    // this.panelCostFunctionChart = new CostFunctionChartPanel(functions);
-    // this.mouseAdapter = new VisualizerMouseAdapter(this);
-    // initializeInterface();
-    // }
-
     public Visualizer(List<DataPoint> dataPoints, Map<Double, String> classNamesForDouble, String[] attributeNames,
             int numberOfPrototypes, Map<CostFunctionValue, Double> currentCostValues) {
 
-        this.panelLambdaMatrix = new LambdaMatrixPanel(attributeNames);
-        this.panelFeatureInfluence = new FeatureImpactPanel(attributeNames);
+        this.panelLambdaMatrix = new LambdaMatrixPanel(attributeNames,this.colorScale);
+        this.panelFeatureInfluence = new FeatureImpactPanel(attributeNames, this.colorScale);
         this.mouseAdapter = new VisualizerMouseAdapter(this);
         this.panelCostFunctionChart = new CostFunctionChartPanel(currentCostValues);
 
@@ -139,6 +128,11 @@ public class Visualizer extends JFrame {
     }
 
     public void updateLambdaMatrix(Matrix lambdaMatrix) {
+        double[] minAndMaxValues = LinearAlgebraicCalculations.getMinAndMaxValuesFromMatrix(lambdaMatrix.copy());
+        float minValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MINIMAL_INDEX];
+        float maxValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MAXIMAL_INDEX];
+        this.colorScale = new ColorScale.Builder(minValue, maxValue).build();
+
         this.panelLambdaMatrix.setLambdaMatrix(lambdaMatrix);
         this.panelLambdaMatrix.repaint();
         this.panelFeatureInfluence.setLambdaMatrix(lambdaMatrix);

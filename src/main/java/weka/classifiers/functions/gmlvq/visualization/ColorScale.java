@@ -15,7 +15,7 @@ public class ColorScale implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // from green to red over yellow
-    private static final float defaultMinimalHue = 1.0f / 3.0f;
+    private static final float defaultMinimalHue = 2.0f / 3.0f;
     private static final float defaultMaximalHue = 0.0f;
     // somewhat pastell colors
     private static final float defaultSaturation = 0.6f;

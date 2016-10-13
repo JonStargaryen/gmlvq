@@ -32,9 +32,9 @@ public class LambdaMatrixPanel extends JPanel {
     private int horizontalMargin;
     private int verticalMargin;
 
-    public LambdaMatrixPanel(String[] attributeNames) {
+    public LambdaMatrixPanel(String[] attributeNames, ColorScale colorScale) {
         this.attributeNames = attributeNames;
-        this.setRenderer(new MatrixRenderer(this));
+        this.setRenderer(new MatrixRenderer(this, colorScale));
         this.setBackground(Color.WHITE);
         // register to show tooltips
         ToolTipManager.sharedInstance().registerComponent(this);
