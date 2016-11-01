@@ -154,7 +154,7 @@ public class CostFunctionCalculator implements Serializable {
                 || costFunctionValue.requiresWeightVector() && this.costFunctionWeights == null) {
             // throw more detailed exception
             throw new IllegalStateException(
-                    "cannot evalate costs for " + costFunctionValue.name() + " as requirements are missing");
+                    "cannot evaluate costs for " + costFunctionValue.name() + " as requirements are missing");
         }
 
         switch (costFunctionValue) {

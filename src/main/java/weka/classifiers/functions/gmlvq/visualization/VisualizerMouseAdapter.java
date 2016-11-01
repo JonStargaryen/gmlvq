@@ -17,7 +17,6 @@ public class VisualizerMouseAdapter extends MouseAdapter {
     public void mouseClicked(MouseEvent e) {
         String componentName = e.getComponent().getName();
         // Debug correct assignment
-        System.out.println(componentName);
         if (componentName.equals("SHOW_SCALE")) {
             this.parent.switchScale();
         } else if (componentName.equals("EXPORT_LAMBDA_MATRIX")) {

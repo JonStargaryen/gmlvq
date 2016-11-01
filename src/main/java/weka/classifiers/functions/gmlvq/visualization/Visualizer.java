@@ -85,7 +85,7 @@ public class Visualizer extends JFrame {
         tabbedPane.addTab("Plots", this.panelCostFunctionChart);
         tabbedPane.addTab("Feature Influence", this.panelFeatureInfluence);
         tabbedPane.addTab("Feature Analysis", this.panelFeatureAnalysis);
-        tabbedPane.setSelectedIndex(3);
+        tabbedPane.setSelectedIndex(0);
 
     }
 
@@ -103,7 +103,7 @@ public class Visualizer extends JFrame {
             File file = fileChooser.getSelectedFile();
             if (file != null && file.exists()) {
                 int response = JOptionPane.showConfirmDialog(null,
-                        "The file already exists. Do you want to replace the existing file?", "Ovewrite file",
+                        "The file already exists. Do you want to replace the existing file?", "Overwrite file",
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (response != JOptionPane.YES_OPTION) {
                     return;

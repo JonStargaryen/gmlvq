@@ -222,9 +222,7 @@ public class UpdateManager implements Serializable {
      * determines whether the stop criterion of the algorithm is met and, thus,
      * learning should cease prematurely
      *
-     * @param prototypeLearningRate
-     * @param omegaLearningRate
-     * @return true if the show is over
+     * @return true if the stop criterion is met
      */
     private boolean stopCriterionNotMet() {
         if (this.prototypeLearningRate < this.stopCriterion && this.omegaLearningRate < this.stopCriterion
@@ -270,8 +268,9 @@ public class UpdateManager implements Serializable {
                 + 100 * ((double) this.numberOfPerformedOmegaUpdates / this.numberOfTotalEpochs) + "%)\n");
 
         if (this.relevanceLearning) {
+            // just for output we have to encapsulate the lambda matrix
             sb.append("\nomega matrix:\n" + this.omegaMatrix.toString() + "\nlambda matrix:\n"
-                    + this.lambdaMatrix.toString());
+                    + new OmegaMatrix(this.lambdaMatrix).toString());
         }
 
         GMLVQCore.LOGGER.info(sb.toString());

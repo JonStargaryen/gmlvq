@@ -24,7 +24,7 @@ public class GMLVQTest {
     public void setup() {
         try {
 
-            // load dataset and convert to internal data structure
+            // load data set and convert to internal data structure
             this.instances = TestUtils.loadDataset(dataset);
             this.dataPoints = WekaModelConverter.createDataPoints(this.instances);
 
