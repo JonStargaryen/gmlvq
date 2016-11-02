@@ -345,7 +345,7 @@ public class GMLVQCore implements Serializable {
             double dplus = winningInformation.getDistanceSameClass();
             double dminus = winningInformation.getDistanceOtherClass();
             double scalingFactor = Math.max(dplus + dminus, LinearAlgebraicCalculations.NUMERIC_CUTOFF);
-            double sigmoidSigma = this.sigmoidFunction.evaluate((dplus - dminus) / scalingFactor);
+            double sigmoidSigma = this.sigmoidFunction.evaluate((dminus - dplus) / scalingFactor);
             // TODO is the sigmoidFunction still valid here or did the
             // sigmoidSigma change?
             distribution[classIndex] = sigmoidSigma;
@@ -848,7 +848,7 @@ public class GMLVQCore implements Serializable {
                 throw new IllegalArgumentException("WEKA instances cannot be null");
             }
 
-            if(!visualization){
+            if (!visualization) {
                 throw new IllegalArgumentException("use build(..) method if visualization is not wanted");
             }
 

@@ -47,6 +47,7 @@ public class GMLVQ extends AbstractClassifier
 
     /**
      * The interface provides all default values and options essential for the
+     * The interface provides all default values and options essential for the
      * algorithm.
      */
     public interface AlgorithmSettings {
@@ -204,6 +205,8 @@ public class GMLVQ extends AbstractClassifier
 
         getCapabilities().testWithFail(trainingData);
 
+        System.out.println(trainingData);
+
         final List<DataPoint> convertedTrainingData = WekaModelConverter.createDataPoints(trainingData);
         final Map<Double, String> classNamesForDouble = WekaModelConverter.extractClassLables(trainingData);
         final String[] attributeNames = WekaModelConverter.extractAttributeNames(trainingData);
@@ -271,10 +274,10 @@ public class GMLVQ extends AbstractClassifier
         result.disableAll();
         // attributes
         result.enable(Capability.NUMERIC_ATTRIBUTES);
-        result.enable(Capability.BINARY_ATTRIBUTES);
+//        result.enable(Capability.BINARY_ATTRIBUTES);
+//        result.enable(Capability.NOMINAL_ATTRIBUTES);
         // class
         result.enable(Capability.NOMINAL_CLASS);
-        result.enable(Capability.NUMERIC_CLASS);
         return result;
     }
 
