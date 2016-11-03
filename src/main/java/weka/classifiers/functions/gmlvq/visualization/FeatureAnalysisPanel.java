@@ -52,16 +52,16 @@ public class FeatureAnalysisPanel extends JPanel {
     private DefaultCategoryDataset chartTrainingData;
     private List<DefaultCategoryDataset> chartPrototypeData;
 
-    private JList<String> listHideByClass;
-    private DefaultListModel<String> listModelHideByClass;
-    private JList<String> listShowByClass;
-    private DefaultListModel<String> listModelShowByClass;
-    private JList<String> listHideByAttribute;
-    private DefaultListModel<String> listModelHideByAttribute;
-    private JList<String> listShowByAttribute;
-    private DefaultListModel<String> listModelShowByAttribute;
-    private JList<String> listShowingPrototypes;
-    private DefaultListModel<String> listModelShowingPrototypes;
+    private JList listHideByClass;
+    private DefaultListModel listModelHideByClass;
+    private JList listShowByClass;
+    private DefaultListModel listModelShowByClass;
+    private JList listHideByAttribute;
+    private DefaultListModel listModelHideByAttribute;
+    private JList listShowByAttribute;
+    private DefaultListModel listModelShowByAttribute;
+    private JList listShowingPrototypes;
+    private DefaultListModel listModelShowingPrototypes;
     private JTree treePrototypes;
 
     private Map<String, Color> classColors = new HashMap<String, Color>();
@@ -75,18 +75,18 @@ public class FeatureAnalysisPanel extends JPanel {
     private boolean prototypesInitialized = false;
 
     public FeatureAnalysisPanel(VisualizerMouseAdapter mouseAdapter, List<DataPoint> datapoints,
-            Map<Double, String> classNamesForDouble, String[] attributeNames, int numberOfPrototypes) {
+                                Map<Double, String> classNamesForDouble, String[] attributeNames, int numberOfPrototypes) {
         this.mouseAdapter = mouseAdapter;
         this.dataPoints = datapoints;
         this.classNamesForDouble = classNamesForDouble;
         this.attributeNames = attributeNames;
         this.numberOfPrototypes = numberOfPrototypes;
 
-        this.listModelShowByClass = new DefaultListModel<String>();
-        this.listModelHideByClass = new DefaultListModel<String>();
-        this.listModelShowByAttribute = new DefaultListModel<String>();
-        this.listModelHideByAttribute = new DefaultListModel<String>();
-        this.listModelShowingPrototypes = new DefaultListModel<String>();
+        this.listModelShowByClass = new DefaultListModel();
+        this.listModelHideByClass = new DefaultListModel();
+        this.listModelShowByAttribute = new DefaultListModel();
+        this.listModelHideByAttribute = new DefaultListModel();
+        this.listModelShowingPrototypes = new DefaultListModel();
 
         initializeTrainingData();
         fillLists();
@@ -98,10 +98,10 @@ public class FeatureAnalysisPanel extends JPanel {
     private void initializeGUI() {
 
         GridBagLayout gbl_panel = new GridBagLayout();
-        gbl_panel.columnWidths = new int[] { 0, 0 };
-        gbl_panel.rowHeights = new int[] { 0, 0, 0, 0 };
-        gbl_panel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-        gbl_panel.rowWeights = new double[] { 0.0, 0.0, 1.0, Double.MIN_VALUE };
+        gbl_panel.columnWidths = new int[]{0, 0};
+        gbl_panel.rowHeights = new int[]{0, 0, 0, 0};
+        gbl_panel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+        gbl_panel.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
         this.setLayout(gbl_panel);
 
         JPanel panelData = new JPanel();
@@ -119,10 +119,10 @@ public class FeatureAnalysisPanel extends JPanel {
                 .setBorder(new TitledBorder(null, "By Class", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panelData.add(panelDataByClass);
         GridBagLayout gbl_panelDataByClass = new GridBagLayout();
-        gbl_panelDataByClass.columnWidths = new int[] { 0, 0, 0, 0 };
-        gbl_panelDataByClass.rowHeights = new int[] { 0, 0, 0, 0, 0, 0 };
-        gbl_panelDataByClass.columnWeights = new double[] { 1.0, 0.0, 1.0, Double.MIN_VALUE };
-        gbl_panelDataByClass.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+        gbl_panelDataByClass.columnWidths = new int[]{0, 0, 0, 0};
+        gbl_panelDataByClass.rowHeights = new int[]{0, 0, 0, 0, 0, 0};
+        gbl_panelDataByClass.columnWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
+        gbl_panelDataByClass.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
         panelDataByClass.setLayout(gbl_panelDataByClass);
 
         JLabel lblClassShowing = new JLabel("Showing");
@@ -171,7 +171,7 @@ public class FeatureAnalysisPanel extends JPanel {
         gbc_btnClassShowOne.gridy = 3;
         panelDataByClass.add(btnClassShowOne, gbc_btnClassShowOne);
 
-        this.listShowByClass = new JList<String>(this.listModelShowByClass);
+        this.listShowByClass = new JList(this.listModelShowByClass);
         JScrollPane scrollShowByClass = new JScrollPane();
         scrollShowByClass.setViewportView(this.listShowByClass);
         GridBagConstraints gbc_listShowByClass = new GridBagConstraints();
@@ -192,7 +192,7 @@ public class FeatureAnalysisPanel extends JPanel {
         gbc_btnClassShowAll.gridy = 4;
         panelDataByClass.add(btnClassShowAll, gbc_btnClassShowAll);
 
-        this.listHideByClass = new JList<String>(this.listModelHideByClass);
+        this.listHideByClass = new JList(this.listModelHideByClass);
         JScrollPane scrollHideByClass = new JScrollPane();
         scrollHideByClass.setViewportView(this.listHideByClass);
         GridBagConstraints gbc_listHideByClass = new GridBagConstraints();
@@ -207,10 +207,10 @@ public class FeatureAnalysisPanel extends JPanel {
                 TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
         panelData.add(panelDataByAttribute);
         GridBagLayout gbl_panelDataByAttribute = new GridBagLayout();
-        gbl_panelDataByAttribute.columnWidths = new int[] { 0, 0, 0, 0 };
-        gbl_panelDataByAttribute.rowHeights = new int[] { 0, 0, 0, 0, 0, 0 };
-        gbl_panelDataByAttribute.columnWeights = new double[] { 1.0, 0.0, 1.0, Double.MIN_VALUE };
-        gbl_panelDataByAttribute.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+        gbl_panelDataByAttribute.columnWidths = new int[]{0, 0, 0, 0};
+        gbl_panelDataByAttribute.rowHeights = new int[]{0, 0, 0, 0, 0, 0};
+        gbl_panelDataByAttribute.columnWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
+        gbl_panelDataByAttribute.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
         panelDataByAttribute.setLayout(gbl_panelDataByAttribute);
 
         JLabel lblAttributeShowing = new JLabel("Showing");
@@ -229,7 +229,7 @@ public class FeatureAnalysisPanel extends JPanel {
         gbc_lblAttributeHiding.gridy = 0;
         panelDataByAttribute.add(lblAttributeHiding, gbc_lblAttributeHiding);
 
-        this.listShowByAttribute = new JList<String>(this.listModelShowByAttribute);
+        this.listShowByAttribute = new JList(this.listModelShowByAttribute);
         JScrollPane scrollShowByAttribute = new JScrollPane();
         scrollShowByAttribute.setViewportView(this.listShowByAttribute);
         GridBagConstraints gbc_listShowByAttribute = new GridBagConstraints();
@@ -250,7 +250,7 @@ public class FeatureAnalysisPanel extends JPanel {
         gbc_btnAttributeHideAll.gridy = 1;
         panelDataByAttribute.add(btnAttributeHideAll, gbc_btnAttributeHideAll);
 
-        this.listHideByAttribute = new JList<String>(this.listModelHideByAttribute);
+        this.listHideByAttribute = new JList(this.listModelHideByAttribute);
         JScrollPane scrollHideByAttribute = new JScrollPane();
         scrollHideByAttribute.setViewportView(this.listHideByAttribute);
         GridBagConstraints gbc_listHideByAttribute = new GridBagConstraints();
@@ -258,7 +258,7 @@ public class FeatureAnalysisPanel extends JPanel {
         gbc_listHideByAttribute.gridheight = 4;
         gbc_listHideByAttribute.gridx = 2;
         gbc_listHideByAttribute.gridy = 1;
-        panelDataByAttribute.add(this.listHideByAttribute, gbc_listHideByAttribute);
+        panelDataByAttribute.add(scrollHideByAttribute, gbc_listHideByAttribute);
 
         JButton btnAttributeHideOne = new JButton(">");
         btnAttributeHideOne.setName("ATTRIBUTE_HIDE_ONE");
@@ -300,10 +300,10 @@ public class FeatureAnalysisPanel extends JPanel {
         gbc_panelPrototypes.gridy = 1;
         this.add(panelPrototypes, gbc_panelPrototypes);
         GridBagLayout gbl_panelPrototypes = new GridBagLayout();
-        gbl_panelPrototypes.columnWidths = new int[] { 0, 0, 0, 0 };
-        gbl_panelPrototypes.rowHeights = new int[] { 0, 0, 0, 0 };
-        gbl_panelPrototypes.columnWeights = new double[] { 1.0, 0.0, 1.0, Double.MIN_VALUE };
-        gbl_panelPrototypes.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
+        gbl_panelPrototypes.columnWidths = new int[]{0, 0, 0, 0};
+        gbl_panelPrototypes.rowHeights = new int[]{0, 0, 0, 0};
+        gbl_panelPrototypes.columnWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
+        gbl_panelPrototypes.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
         panelPrototypes.setLayout(gbl_panelPrototypes);
 
         JLabel lblAvailablePrototypes = new JLabel("Available Prototypes");
@@ -353,13 +353,15 @@ public class FeatureAnalysisPanel extends JPanel {
         gbc_btnRemovePrototype.gridy = 2;
         panelPrototypes.add(btnRemovePrototype, gbc_btnRemovePrototype);
 
-        this.listShowingPrototypes = new JList<String>(this.listModelShowingPrototypes);
+        this.listShowingPrototypes = new JList(this.listModelShowingPrototypes);
+        JScrollPane scrollShowingPrototypes = new JScrollPane();
+        scrollShowingPrototypes.setViewportView(this.listShowingPrototypes);
         GridBagConstraints gbc_listShowingPrototypes = new GridBagConstraints();
         gbc_listShowingPrototypes.gridheight = 2;
         gbc_listShowingPrototypes.fill = GridBagConstraints.BOTH;
         gbc_listShowingPrototypes.gridx = 2;
         gbc_listShowingPrototypes.gridy = 1;
-        panelPrototypes.add(this.listShowingPrototypes, gbc_listShowingPrototypes);
+        panelPrototypes.add(scrollShowingPrototypes, gbc_listShowingPrototypes);
 
         this.chartPanel = new ChartPanel(this.chart);
         GridBagConstraints gbc_panelChart = new GridBagConstraints();
@@ -475,11 +477,11 @@ public class FeatureAnalysisPanel extends JPanel {
 
     }
 
-    public void moveAll(DefaultListModel<String> source, DefaultListModel<String> target, String componentName) {
+    public void moveAll(DefaultListModel source, DefaultListModel target, String componentName) {
         List<String> tempList = new ArrayList<String>();
         // create temporary list
         for (int i = 0; i < source.getSize(); i++) {
-            String classLabel = source.getElementAt(i);
+            String classLabel = (String)source.getElementAt(i);
             tempList.add(classLabel);
         }
         for (String currentLabel : tempList) {
@@ -487,8 +489,8 @@ public class FeatureAnalysisPanel extends JPanel {
         }
     }
 
-    public void moveOne(DefaultListModel<String> source, DefaultListModel<String> target, String element,
-            String componentName) {
+    public void moveOne(DefaultListModel source, DefaultListModel target, String element,
+                        String componentName) {
         if (element != null) {
             target.addElement(element);
             source.removeElement(element);
@@ -551,7 +553,9 @@ public class FeatureAnalysisPanel extends JPanel {
         if (matcher.matches()) {
             int rendererIndex = Integer.valueOf(matcher.group(1));
             ((CategoryPlot) this.chart.getPlot()).getRenderer(rendererIndex + 1).setSeriesVisible(0, true);
-            this.listModelShowingPrototypes.addElement(label);
+            if (!this.listModelShowingPrototypes.contains(label)) {
+                this.listModelShowingPrototypes.addElement(label);
+            }
         }
     }
 
@@ -565,51 +569,51 @@ public class FeatureAnalysisPanel extends JPanel {
         }
     }
 
-    public DefaultListModel<String> getListModelHideByClass() {
+    public DefaultListModel getListModelHideByClass() {
         return this.listModelHideByClass;
     }
 
-    public DefaultListModel<String> getListModelShowByClass() {
+    public DefaultListModel getListModelShowByClass() {
         return this.listModelShowByClass;
     }
 
-    public DefaultListModel<String> getListModelHideByAttribute() {
+    public DefaultListModel getListModelHideByAttribute() {
         return this.listModelHideByAttribute;
     }
 
-    public DefaultListModel<String> getListModelShowByAttribute() {
+    public DefaultListModel getListModelShowByAttribute() {
         return this.listModelShowByAttribute;
     }
 
-    public JList<String> getListShowByClass() {
+    public JList getListShowByClass() {
         return this.listShowByClass;
     }
 
-    public JList<String> getListHideByClass() {
+    public JList getListHideByClass() {
         return this.listHideByClass;
     }
 
-    public JList<String> getListHideByAttribute() {
+    public JList getListHideByAttribute() {
         return this.listHideByAttribute;
     }
 
-    public JList<String> getListShowByAttribute() {
+    public JList getListShowByAttribute() {
         return this.listShowByAttribute;
     }
 
-    public DefaultListModel<String> getListModelShowingPrototypes() {
+    public DefaultListModel getListModelShowingPrototypes() {
         return this.listModelShowingPrototypes;
     }
 
-    public void setListModelShowingPrototypes(DefaultListModel<String> listModelShowingPrototypes) {
+    public void setListModelShowingPrototypes(DefaultListModel listModelShowingPrototypes) {
         this.listModelShowingPrototypes = listModelShowingPrototypes;
     }
 
-    public JList<String> getListShowingPrototypes() {
+    public JList getListShowingPrototypes() {
         return this.listShowingPrototypes;
     }
 
-    public void setListShowingPrototypes(JList<String> listShowingPrototypes) {
+    public void setListShowingPrototypes(JList listShowingPrototypes) {
         this.listShowingPrototypes = listShowingPrototypes;
     }
 

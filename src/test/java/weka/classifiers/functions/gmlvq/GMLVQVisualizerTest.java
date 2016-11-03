@@ -23,7 +23,7 @@ public class GMLVQVisualizerTest {
         instances = TestUtils.loadDataset("iris.arff");
         dataPoints = WekaModelConverter.createDataPoints(instances);
         gmlvq = new GMLVQCore.Builder().numberOfEpochs(1000)
-                                       .numberOfPrototypesPerClass(5)
+                                       .numberOfPrototypesPerClass(4)
                                        .dataPointRatioPerRound(0.8)
                                        .costFunctionToOptimize(CostFunctionValue.CLASSIFICATION_ERROR)
                                        .buildAndShow(dataPoints, instances);

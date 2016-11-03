@@ -31,16 +31,20 @@ public class VisualizerMouseAdapter extends MouseAdapter {
                     this.parent.getFeatureAnalysisPanel().getListModelShowByClass(), componentName);
         } else if (componentName.equals("CLASS_SHOW_ONE")) {
             int index = this.parent.getFeatureAnalysisPanel().getListHideByClass().getSelectedIndex();
-            String classLabel = this.parent.getFeatureAnalysisPanel().getListModelHideByClass().getElementAt(index);
-            this.parent.getFeatureAnalysisPanel().moveOne(
-                    this.parent.getFeatureAnalysisPanel().getListModelHideByClass(),
-                    this.parent.getFeatureAnalysisPanel().getListModelShowByClass(), classLabel, componentName);
+            if (index >= 0) {
+                String classLabel = (String) this.parent.getFeatureAnalysisPanel().getListModelHideByClass().getElementAt(index);
+                this.parent.getFeatureAnalysisPanel().moveOne(
+                        this.parent.getFeatureAnalysisPanel().getListModelHideByClass(),
+                        this.parent.getFeatureAnalysisPanel().getListModelShowByClass(), classLabel, componentName);
+            }
         } else if (componentName.equals("CLASS_HIDE_ONE")) {
             int index = this.parent.getFeatureAnalysisPanel().getListShowByClass().getSelectedIndex();
-            String classLabel = this.parent.getFeatureAnalysisPanel().getListModelShowByClass().getElementAt(index);
-            this.parent.getFeatureAnalysisPanel().moveOne(
-                    this.parent.getFeatureAnalysisPanel().getListModelShowByClass(),
-                    this.parent.getFeatureAnalysisPanel().getListModelHideByClass(), classLabel, componentName);
+            if (index >= 0) {
+                String classLabel = (String) this.parent.getFeatureAnalysisPanel().getListModelShowByClass().getElementAt(index);
+                this.parent.getFeatureAnalysisPanel().moveOne(
+                        this.parent.getFeatureAnalysisPanel().getListModelShowByClass(),
+                        this.parent.getFeatureAnalysisPanel().getListModelHideByClass(), classLabel, componentName);
+            }
         } else if (componentName.equals("ATTRIBUTE_HIDE_ALL")) {
             this.parent.getFeatureAnalysisPanel().moveAll(
                     this.parent.getFeatureAnalysisPanel().getListModelShowByAttribute(),
@@ -51,24 +55,29 @@ public class VisualizerMouseAdapter extends MouseAdapter {
                     this.parent.getFeatureAnalysisPanel().getListModelShowByAttribute(), componentName);
         } else if (componentName.equals("ATTRIBUTE_SHOW_ONE")) {
             int index = this.parent.getFeatureAnalysisPanel().getListHideByAttribute().getSelectedIndex();
-            String attributeLabel = this.parent.getFeatureAnalysisPanel().getListModelHideByAttribute()
-                    .getElementAt(index);
-            this.parent.getFeatureAnalysisPanel().moveOne(
-                    this.parent.getFeatureAnalysisPanel().getListModelHideByAttribute(),
-                    this.parent.getFeatureAnalysisPanel().getListModelShowByAttribute(), attributeLabel, componentName);
+            if (index >= 0) {
+                String attributeLabel = (String) this.parent.getFeatureAnalysisPanel().getListModelHideByAttribute()
+                        .getElementAt(index);
+                this.parent.getFeatureAnalysisPanel().moveOne(
+                        this.parent.getFeatureAnalysisPanel().getListModelHideByAttribute(),
+                        this.parent.getFeatureAnalysisPanel().getListModelShowByAttribute(), attributeLabel, componentName);
+            }
         } else if (componentName.equals("ATTRIBUTE_HIDE_ONE")) {
             int index = this.parent.getFeatureAnalysisPanel().getListShowByAttribute().getSelectedIndex();
-            String attributeLabel = this.parent.getFeatureAnalysisPanel().getListModelShowByAttribute()
-                    .getElementAt(index);
-            this.parent.getFeatureAnalysisPanel().moveOne(
-                    this.parent.getFeatureAnalysisPanel().getListModelShowByAttribute(),
-                    this.parent.getFeatureAnalysisPanel().getListModelHideByAttribute(), attributeLabel, componentName);
-            this.parent.getFeatureAnalysisPanel().hideAttribute(attributeLabel);
+            if (index >= 0) {
+                String attributeLabel = (String) this.parent.getFeatureAnalysisPanel().getListModelShowByAttribute()
+                        .getElementAt(index);
+                this.parent.getFeatureAnalysisPanel().moveOne(
+                        this.parent.getFeatureAnalysisPanel().getListModelShowByAttribute(),
+                        this.parent.getFeatureAnalysisPanel().getListModelHideByAttribute(), attributeLabel, componentName);
+            }
         } else if (componentName.equals("PROTOTYPE_REMOVE")) {
             int index = this.parent.getFeatureAnalysisPanel().getListShowingPrototypes().getSelectedIndex();
-            String prototypeLabel = this.parent.getFeatureAnalysisPanel().getListModelShowingPrototypes()
-                    .getElementAt(index);
-            this.parent.getFeatureAnalysisPanel().hideProtoype(prototypeLabel);
+            if (index >= 0) {
+                String prototypeLabel = (String) this.parent.getFeatureAnalysisPanel().getListModelShowingPrototypes()
+                        .getElementAt(index);
+                this.parent.getFeatureAnalysisPanel().hideProtoype(prototypeLabel);
+            }
         } else if (componentName.equals("PROTOTYPE_SHOW")) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.parent.getFeatureAnalysisPanel()
                     .getTreePrototypes().getLastSelectedPathComponent();
