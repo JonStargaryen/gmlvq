@@ -95,7 +95,7 @@ public class FeatureImpactPanel extends JPanel {
 
         String[] cols = { "color", "feature", "value" };
         Iterator<Entry<String, Double>> it = this.featureImportance.iterator();
-        int maxFeatureIndex = 15;
+        int maxFeatureIndex =  attributeNames.length < 15 ? attributeNames.length : 15;
         int currentFeatureIndex = 0;
 
         String[][] data = new String[maxFeatureIndex][3];

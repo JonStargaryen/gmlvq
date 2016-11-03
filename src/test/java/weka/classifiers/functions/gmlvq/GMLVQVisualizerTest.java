@@ -20,7 +20,7 @@ public class GMLVQVisualizerTest {
 
     @Before
     public void setup() throws Exception {
-        instances = TestUtils.loadDataset("hds.arff");
+        instances = TestUtils.loadDataset("iris.arff");
         dataPoints = WekaModelConverter.createDataPoints(instances);
         gmlvq = new GMLVQCore.Builder().numberOfEpochs(1000)
                                        .numberOfPrototypesPerClass(5)

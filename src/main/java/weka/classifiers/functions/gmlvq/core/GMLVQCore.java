@@ -135,16 +135,15 @@ public class GMLVQCore implements Serializable {
 
         this.dataRandomizer = new DataRandomizer(this.dataPoints.size(), this.dataPointRatioPerRound, this.seed);
         this.sigmoidFunction = new SigmoidFunction(this.sigmoidSigmaIntervalStart, this.sigmoidSigmaIntervalEnd,
-                                                   this.numberOfTotalEpochs);
+                this.numberOfTotalEpochs);
 
         // initialize cost function calculator
         CostFunctionCalculator costFunctionCalculator = new CostFunctionCalculator(this.sigmoidFunction,
-                                                                                   builder.costFunctionBeta,
-                                                                                   builder.costFunctionWeights,
-                                                                                   builder.costFunctionToOptimize,
-                                                                                   builder.additionalCostFunctions
-                                                                                           .toArray(
-                                                                                                   new CostFunctionValue[0]));
+                builder.costFunctionBeta,
+                builder.costFunctionWeights,
+                builder.costFunctionToOptimize,
+                builder.additionalCostFunctions
+                        .toArray(new CostFunctionValue[0]));
         // register multiple costs functions
         // List<CostFunction> additionalCostFunctions = new
         // ArrayList<CostFunction>();
@@ -154,6 +153,10 @@ public class GMLVQCore implements Serializable {
         this.gradientDescent = new GradientDescent(this.dataRandomizer, this.sigmoidFunction, costFunctionCalculator);
         initializeMatrices();
         initializePrototypes();
+        if (this.visualization) {
+            builder.observer.updatePrototypes(this.prototypes);
+            builder.observer.updateLambdaMatrix(this.getLambdaMatrix());
+        }
 
         // create the update manager with additional cost functions
         this.updateManager = new UpdateManager(this, costFunctionCalculator, builder.observer);
@@ -288,12 +291,12 @@ public class GMLVQCore implements Serializable {
         boolean run = true;
         while (run) {
             ProposedUpdate proposedUpdate = this.gradientDescent.performStochasticGradientDescent(this.dataPoints,
-                                                                                                  this.prototypes,
-                                                                                                  this.omegaMatrix,
-                                                                                                  this.updateManager
-                                                                                                          .getPrototypeLearningRate(),
-                                                                                                  this.updateManager
-                                                                                                          .getOmegaLearningRate());
+                    this.prototypes,
+                    this.omegaMatrix,
+                    this.updateManager
+                            .getPrototypeLearningRate(),
+                    this.updateManager
+                            .getOmegaLearningRate());
             run = this.updateManager.update(proposedUpdate);
 
         }
@@ -311,9 +314,9 @@ public class GMLVQCore implements Serializable {
         int bmuIndex = -1;
         for (int prototypeIndex = 0; prototypeIndex < this.prototypes.size(); prototypeIndex++) {
             EmbeddedSpaceVector mappedPrototype = this.prototypes.get(prototypeIndex)
-                                                                 .getEmbeddedSpaceVector(this.omegaMatrix);
+                    .getEmbeddedSpaceVector(this.omegaMatrix);
             double distance = LinearAlgebraicCalculations.calculateSquaredEuclideanDistance(mappedDataPoint,
-                                                                                            mappedPrototype);
+                    mappedPrototype);
             if (distance < bmuDistance) {
                 bmuDistance = distance;
                 bmuIndex = prototypeIndex;
@@ -371,7 +374,7 @@ public class GMLVQCore implements Serializable {
         // if matrix learning is enabled
         if (this.matrixLearning) {
             LOGGER.finest("initializing omega matrix with data dimension " + this.dataDimension
-                          + " and omega dimension " + this.omegaDimension);
+                    + " and omega dimension " + this.omegaDimension);
             if (this.dataDimension == this.omegaDimension) {
                 LOGGER.finest("initializing omega matrix as identity matrix");
                 this.omegaMatrix = new OmegaMatrix(Matrix.identity(this.omegaDimension, this.omegaDimension));
@@ -380,8 +383,8 @@ public class GMLVQCore implements Serializable {
 
                 // chooses data points
                 List<DataPoint> chosenTrainingData = this.dataRandomizer.generateRandomizedSubListOf(this.dataPoints,
-                                                                                                     DefaultSettings
-                                                                                                             .OMEGA_MATRIX_INITIALIZATION_AND_REGULARIZATION_NUMBER_OF_DATA_POINTS);
+                        DefaultSettings
+                                .OMEGA_MATRIX_INITIALIZATION_AND_REGULARIZATION_NUMBER_OF_DATA_POINTS);
 
                 double[][] dataMatrix = new double[chosenTrainingData.size()][];
                 for (int index = 0; index < dataMatrix.length; index++) {
@@ -398,15 +401,15 @@ public class GMLVQCore implements Serializable {
                     // for (int index = scaledEigenvalues.getColumnDimension() -
                     // 1; index >= 0; index--) {
                     scaledEigenvalues.set(index, index, 1 / Math.max(scaledEigenvalues.get(index, index),
-                                                                     DefaultSettings
-                                                                             .OMEGA_MATRIX_INITIALIZATION_MINIMAL_EXPECTED_VALUE));
+                            DefaultSettings
+                                    .OMEGA_MATRIX_INITIALIZATION_MINIMAL_EXPECTED_VALUE));
                 }
                 this.omegaMatrix = new OmegaMatrix(eigenvalueDecomposition.getV().times(scaledEigenvalues).getMatrix(0,
-                                                                                                                     this.omegaDimension -
-                                                                                                                     1,
-                                                                                                                     0,
-                                                                                                                     this.dataDimension -
-                                                                                                                     1));
+                        this.omegaDimension -
+                                1,
+                        0,
+                        this.dataDimension -
+                                1));
 
                 computeLambdaMatrix();
                 normalizeOmegaMatrix();
@@ -460,11 +463,11 @@ public class GMLVQCore implements Serializable {
                 Prototype prototype = new Prototype(
                         LinearAlgebraicCalculations.createMeanVectorFromListOfVectors(dataPointsWithLabel), classLabel);
                 LOGGER.finest("initializing one prototype for " + classLabel
-                              + " (with centroid of the class values) as \n" + prototype);
+                        + " (with centroid of the class values) as \n" + prototype);
                 this.prototypes.add(prototype);
             } else {
                 LOGGER.finest("initializing " + numberOfPrototypesToCreate + " prototypes for " + classLabel
-                              + " (at the position of a datapoint of the same class)");
+                        + " (at the position of a datapoint of the same class)");
                 initializeMultiplePrototypesForClass(dataPointsWithLabel, classLabel);
             }
         }
@@ -479,8 +482,8 @@ public class GMLVQCore implements Serializable {
      */
     private void initializeMultiplePrototypesForClass(List<DataPoint> dataPointsWithSameLabel, double classLabel) {
         for (DataPoint randomDataPoint : this.dataRandomizer.generateRandomizedSubListOf(dataPointsWithSameLabel,
-                                                                                         this.prototypesPerClass.get(
-                                                                                                 classLabel))) {
+                this.prototypesPerClass.get(
+                        classLabel))) {
             this.prototypes.add(new Prototype(randomDataPoint));
         }
     }
@@ -814,14 +817,14 @@ public class GMLVQCore implements Serializable {
             if (this.numberOfClasses > 2 && anyCostFunctionRequiresConfusionMatrix()) {
                 throw new IllegalArgumentException(
                         "cannot compute confusion-matrix-based cost functions for problems with " + this.numberOfClasses
-                        + " classes");
+                                + " classes");
             }
 
             // check for correct cost function weights
             if (this.costFunctionWeights[0] + this.costFunctionWeights[1] != 1.0) {
                 throw new IllegalArgumentException(
                         "weights for confusion matrix based cost functions must sum up to 1.0 but are "
-                        + Arrays.toString(this.costFunctionWeights));
+                                + Arrays.toString(this.costFunctionWeights));
             }
 
             return new GMLVQCore(this);
@@ -836,8 +839,8 @@ public class GMLVQCore implements Serializable {
          * @throws Exception
          */
         public GMLVQCore buildAndShow(List<DataPoint> dataPoints, Instances instances) throws
-                                                                                       ExecutionException,
-                                                                                       InterruptedException {
+                ExecutionException,
+                InterruptedException {
 
             if (dataPoints == null) {
                 throw new IllegalArgumentException("dataPoints cannot be null");
@@ -880,16 +883,16 @@ public class GMLVQCore implements Serializable {
             if (this.numberOfClasses > 2 && this.anyCostFunctionRequiresConfusionMatrix()) {
                 throw new IllegalArgumentException(
                         "cannot compute confusion-matrix-based cost functions for problems with " +
-                        this.numberOfClasses
-                        +
-                        " classes");
+                                this.numberOfClasses
+                                +
+                                " classes");
             }
 
             // check for correct cost function weights
             if (this.costFunctionWeights[0] + this.costFunctionWeights[1] != 1.0) {
                 throw new IllegalArgumentException(
                         "weights for confusion matrix based cost functions must sum up to 1.0 but are "
-                        + Arrays.toString(this.costFunctionWeights));
+                                + Arrays.toString(this.costFunctionWeights));
             }
 
             // this is used to set up the Visualizer
