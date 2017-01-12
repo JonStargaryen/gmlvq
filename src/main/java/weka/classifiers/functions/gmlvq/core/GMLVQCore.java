@@ -9,11 +9,16 @@ import weka.core.Instances;
 import weka.core.matrix.EigenvalueDecomposition;
 import weka.core.matrix.Matrix;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
@@ -67,14 +72,86 @@ import java.util.logging.Logger;
 public class GMLVQCore implements Serializable {
 
     public static final Logger LOGGER = Logger.getLogger(GMLVQCore.class.getName());
+    public static final DateFormat LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     private static final long serialVersionUID = 1L;
 
     static {
-        ConsoleHandler consoleHandler = new ConsoleHandler();
-        consoleHandler.setLevel(Level./* FINEST */INFO);
+//        ConsoleHandler consoleHandler = new ConsoleHandler();
+//        consoleHandler.setLevel(Level./* FINEST */INFO);
         LOGGER.setUseParentHandlers(false);
         LOGGER.setLevel(Level./* FINEST */INFO);
-        LOGGER.addHandler(consoleHandler);
+//        LOGGER.addHandler(consoleHandler);
+        LOGGER.addHandler(new Handler() {
+            private BufferedWriter writer;
+
+            @Override
+            public void close() throws SecurityException {
+                try {
+                    if (this.writer != null) {
+
+                        this.writer.close();
+                    }
+                } catch (Exception e) {
+                }
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void publish(LogRecord record) {
+                synchronized (LOGGER) {
+                    if (record.getLevel().intValue() > Level.WARNING.intValue()) {
+                        addLogEntry(record);
+                        System.err.print(getFormattedLogRecord(record));
+                    } else {
+                        System.out.print(getFormattedLogRecord(record));
+                    }
+                }
+            }
+
+            private synchronized void addLogEntry(LogRecord record) {
+                if (this.writer == null) {
+                    try {
+                        this.writer = new BufferedWriter(new FileWriter("Fit3D.err", true));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    this.writer.write(getFormattedLogRecord(record));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            private String getFormattedLogRecord(LogRecord record) {
+                StringBuilder builderRecord = new StringBuilder();
+
+                builderRecord.append(LOG_DATE_FORMAT.format(new Date(record.getMillis())) + " ");
+
+                if (record.getLevel().intValue() == Level.SEVERE.intValue()) {
+
+                    builderRecord.append("[" + record.getSourceClassName() + "#" + record.getThreadID() + "#" + record.getSourceMethodName() + "] ");
+                }
+
+                builderRecord.append(record.getLevel() + ": " + record.getMessage());
+
+                if (record.getThrown() != null) {
+                    builderRecord.append("\n");
+                    for (StackTraceElement entry : record.getThrown().getStackTrace()) {
+                        builderRecord.append("\t" + entry.toString() + "\n");
+                    }
+                }
+
+                builderRecord.append("\n");
+
+                return builderRecord.toString();
+            }
+        });
     }
 
     // required
@@ -569,7 +646,7 @@ public class GMLVQCore implements Serializable {
 
         private boolean matrixLearning = GMLVQCore.DefaultSettings.DEFAULT_MATRIX_LEARNING;
         private boolean parallelExecution = GMLVQCore.DefaultSettings.DEFAULT_PARALLEL_EXECUTION;
-        private boolean visualization = GMLVQCore.DefaultSettings.DEFAULT_VISUALIZATION;
+        public boolean visualization = GMLVQCore.DefaultSettings.DEFAULT_VISUALIZATION;
 
         // costs
         private CostFunctionValue costFunctionToOptimize = GMLVQCore.DefaultSettings.DEFAULT_COST_FUNCTION;
@@ -577,7 +654,7 @@ public class GMLVQCore implements Serializable {
         private double costFunctionBeta = CostFunctionCalculator.DEFAULT_BETA;
         private double[] costFunctionWeights = CostFunctionCalculator.DEFAULT_WEIGHTS;
 
-        private Observer observer;
+        private transient Observer observer;
         private long seed = 0;
         // the following fields are set when build() is executed
         private int numberOfClasses;
@@ -739,10 +816,10 @@ public class GMLVQCore implements Serializable {
             return this;
         }
 
-        public Builder visualization(boolean visualization) {
-            this.visualization = visualization;
-            return this;
-        }
+//        public Builder visualization(boolean visualization) {
+//            this.visualization = visualization;
+//            return this;
+//        }
 
         public Builder seed(long seed) {
             this.seed = seed;
@@ -842,6 +919,8 @@ public class GMLVQCore implements Serializable {
                 ExecutionException,
                 InterruptedException {
 
+            visualization = true;
+
             if (dataPoints == null) {
                 throw new IllegalArgumentException("dataPoints cannot be null");
             }
@@ -849,10 +928,6 @@ public class GMLVQCore implements Serializable {
 
             if (instances == null) {
                 throw new IllegalArgumentException("WEKA instances cannot be null");
-            }
-
-            if (!visualization) {
-                throw new IllegalArgumentException("use build(..) method if visualization is not wanted");
             }
 
             // extract and check the number of unique classes

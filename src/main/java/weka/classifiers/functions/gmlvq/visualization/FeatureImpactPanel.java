@@ -1,24 +1,14 @@
 package weka.classifiers.functions.gmlvq.visualization;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextPane;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-
 import weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations;
 import weka.core.matrix.Matrix;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class FeatureImpactPanel extends JPanel {
 
@@ -68,6 +58,14 @@ public class FeatureImpactPanel extends JPanel {
                     component.setBackground(FeatureImpactPanel.this.getBackground());
                 }
                 return component;
+            }
+
+            /**
+             * Prohibit editing of cells by the user.
+             */
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
         };
 

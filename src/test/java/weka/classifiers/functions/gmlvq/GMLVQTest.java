@@ -1,21 +1,20 @@
 package weka.classifiers.functions.gmlvq;
 
-import static org.junit.Assert.fail;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import weka.classifiers.functions.gmlvq.core.GMLVQCore;
 import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
 import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.WekaModelConverter;
 import weka.core.Instances;
 
+import java.util.List;
+
+import static org.junit.Assert.fail;
+
 public class GMLVQTest {
 
-    private static final String dataset = TestUtils.Datasets.TECATOR_D;
+    private static final String dataset = TestUtils.Datasets.MEMBRANE_TOPOLOGY_GUTTERIDGE_4;
     private Instances instances;
     private List<DataPoint> dataPoints;
     private GMLVQCore gmlvq;
@@ -31,7 +30,8 @@ public class GMLVQTest {
             // create GMLVQ instance with requested parameters
             this.gmlvq = new GMLVQCore.Builder()/* .matrixLearning(false) */
                     .costFunctionToOptimize(CostFunctionValue.WEIGHTED_ACCURACY).numberOfEpochs(2500)
-                    .dataPointRatioPerRound(1.0).build(this.dataPoints);
+                    .dataPointRatioPerRound(1.0)
+                    .buildAndShow(this.dataPoints, instances);
         } catch (Exception e) {
             e.printStackTrace();
             fail("could not set up test, as:\n" + e.getMessage());
