@@ -21,13 +21,12 @@ import java.util.*;
  * well as its GUI integration<br />
  *
  * @author S
- * @see {@link GMLVQCore} for details on GMLVQ's implementation
+ * @see GMLVQCore for details on GMLVQ's implementation
  */
 public class GMLVQ extends AbstractClassifier
-        implements TechnicalInformationHandler, Randomizable, AdditionalMeasureProducer, Observer {
+        implements TechnicalInformationHandler, /*Randomizable, AdditionalMeasureProducer,*/ Observer {
 
     /**
-     * The interface provides all default values and options essential for the
      * The interface provides all default values and options essential for the
      * algorithm.
      */
@@ -183,6 +182,15 @@ public class GMLVQ extends AbstractClassifier
         return omegaMatrix.getColumnDimension() != 1 && omegaMatrix.getRowDimension() != 1;
     }
 
+    @Override
+    public String toString() {
+        return "Generalized Matrix Learning Vector Quantization\n" +
+                "prototypes per class: " + this.getNumberOfPrototypesPerClass() + "\n" +
+                "maximal epochs: " + this.getNumberOfEpochs() + "\n" +
+                "omega dimension: " + this.getOmegaDimension() + "\n" +
+                "cost function optimized: " + this.builder.getCostFunctionToOptimize().getClass().getSimpleName();
+    }
+
     /**
      * Main method for testing this class
      *
@@ -194,7 +202,7 @@ public class GMLVQ extends AbstractClassifier
 
     private Builder builder;
 
-    private int seed;
+//    private int seed;
 
     private GMLVQCore gmlvqInstance;
 
@@ -266,11 +274,11 @@ public class GMLVQ extends AbstractClassifier
         return "fraction of the data that is used for each batch learning step";
     }
 
-    @Override
-    public Enumeration<String> enumerateMeasures() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//    @Override
+//    public Enumeration<String> enumerateMeasures() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 
     @Override
     public Capabilities getCapabilities() {
@@ -331,11 +339,11 @@ public class GMLVQ extends AbstractClassifier
         return this.builder.getLearnRateChange();
     }
 
-    @Override
-    public double getMeasure(String measureName) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+//    @Override
+//    public double getMeasure(String measureName) {
+//        // TODO Auto-generated method stub
+//        return 0;
+//    }
 
     public int getNumberOfClasses() {
         return this.builder.getNumberOfClasses();
@@ -417,10 +425,10 @@ public class GMLVQ extends AbstractClassifier
         return this.builder.getPrototypesPerClass();
     }
 
-    @Override
-    public int getSeed() {
-        return (int) this.seed;
-    }
+//    @Override
+//    public int getSeed() {
+//        return (int) this.seed;
+//    }
 
     public String getSigmoidSigmaInterval() {
         return this.builder.getSigmoidSigmaInterval();
@@ -436,7 +444,6 @@ public class GMLVQ extends AbstractClassifier
 
     @Override
     public TechnicalInformation getTechnicalInformation() {
-        // TODO add publication and stuff
         return null;
     }
 
@@ -742,11 +749,11 @@ public class GMLVQ extends AbstractClassifier
 
     }
 
-    @Override
-    public void setSeed(int seed) {
-        this.seed = seed;
-        this.builder.seed((long) this.seed);
-    }
+//    @Override
+//    public void setSeed(int seed) {
+//        this.seed = seed;
+//        this.builder.seed((long) this.seed);
+//    }
 
     public void setSigmoidSigmaInterval(String sigmoidSigmaIntervalString) {
         this.builder.sigmoidSigmaInterval(sigmoidSigmaIntervalString);
