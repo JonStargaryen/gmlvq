@@ -2,6 +2,7 @@ package weka.classifiers.functions.gmlvq;
 
 import org.junit.Before;
 import org.junit.Test;
+import weka.classifiers.functions.GMLVQ;
 import weka.classifiers.functions.gmlvq.core.GMLVQCore;
 import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
 import weka.classifiers.functions.gmlvq.model.DataPoint;
@@ -27,10 +28,20 @@ public class GMLVQVisualizerTest {
                                        .dataPointRatioPerRound(0.8)
                                        .costFunctionToOptimize(CostFunctionValue.CLASSIFICATION_ERROR)
                                        .buildAndShow(dataPoints, instances);
+
+
     }
 
     @Test
-    public void shouldRunClassifier() throws Exception {
+    public void shouldRunClassifierOnce() throws Exception {
+        long startTime = System.currentTimeMillis();
+        this.gmlvq.buildClassifier();
+        long endTime = System.currentTimeMillis();
+        System.out.println("computation took " + ((double) endTime - startTime) / 1000 + " s");
+    }
+
+    @Test
+    public void shouldRunClassifierAgain() throws Exception {
         long startTime = System.currentTimeMillis();
         this.gmlvq.buildClassifier();
         long endTime = System.currentTimeMillis();
@@ -38,4 +49,5 @@ public class GMLVQVisualizerTest {
         // infinite sleep
         Thread.sleep(Long.MAX_VALUE);
     }
+
 }

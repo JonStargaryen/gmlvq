@@ -5,6 +5,7 @@ import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.Observer;
 import weka.classifiers.functions.gmlvq.model.Prototype;
 import weka.classifiers.functions.gmlvq.model.WekaModelConverter;
+import weka.classifiers.functions.gmlvq.visualization.VisualizationSingleton;
 import weka.classifiers.functions.gmlvq.visualization.Visualizer;
 import weka.core.Instances;
 import weka.core.matrix.Matrix;
@@ -24,9 +25,7 @@ import java.util.Map;
  */
 public class GMLVQDefaultObserver implements Observer {
 
-    private Visualizer visualizer;
-
-    public GMLVQDefaultObserver(Instances trainingData, int numberOfPrototypes,
+    public GMLVQDefaultObserver(GMLVQCore gmlvqCore, Instances trainingData, int numberOfPrototypes,
                                 Map<CostFunctionValue, Double> currentCostValues) {
 
         final List<DataPoint> convertedTrainingData = WekaModelConverter.createDataPoints(trainingData);
@@ -39,35 +38,32 @@ public class GMLVQDefaultObserver implements Observer {
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
-                    GMLVQDefaultObserver.this.visualizer = new Visualizer(convertedTrainingData,
-                                                                          classNamesForDouble,
-                                                                          attributeNames,
-                                                                          finalNumberOfPrototypes,
-                                                                          finalCurrentCostValues);
-                    GMLVQDefaultObserver.this.visualizer.setVisible(true);
+                    VisualizationSingleton.addVisualization(new Visualizer(gmlvqCore, convertedTrainingData,
+                            classNamesForDouble,
+                            attributeNames,
+                            finalNumberOfPrototypes,
+                            finalCurrentCostValues));
+                    VisualizationSingleton.showVisualizations();
                 }
             });
-        } catch (InterruptedException e) {
-            GMLVQCore.LOGGER.warning("failed to initialize visualizer " + e.getMessage());
-        } catch (InvocationTargetException e) {
+        } catch (InterruptedException | InvocationTargetException e) {
             GMLVQCore.LOGGER.warning("failed to initialize visualizer " + e.getMessage());
         }
     }
 
     @Override
     public void updateCostFunctions(Map<CostFunctionValue, Double> currentCostValues) {
-        this.visualizer.updateCostFunctions(currentCostValues);
-
+        VisualizationSingleton.getLastVisualizalizer().updateCostFunctions(currentCostValues);
     }
 
     @Override
     public void updateLambdaMatrix(Matrix lambdaMatrix) {
-        this.visualizer.updateLambdaMatrix(lambdaMatrix);
+        VisualizationSingleton.getLastVisualizalizer().updateLambdaMatrix(lambdaMatrix);
     }
 
     @Override
     public void updatePrototypes(List<Prototype> prototypes) {
-        this.visualizer.updatePrototypes(prototypes);
+        VisualizationSingleton.getLastVisualizalizer().updatePrototypes(prototypes);
     }
 
 }

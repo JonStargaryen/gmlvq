@@ -153,10 +153,6 @@ public class GMLVQCore implements Serializable {
         this.gradientDescent = new GradientDescent(this.dataRandomizer, this.sigmoidFunction, costFunctionCalculator);
         initializeMatrices();
         initializePrototypes();
-        if (this.visualization) {
-            builder.observer.updatePrototypes(this.prototypes);
-            builder.observer.updateLambdaMatrix(this.getLambdaMatrix());
-        }
 
         // create the update manager with additional cost functions
         this.updateManager = new UpdateManager(this, costFunctionCalculator, builder.observer);
@@ -895,6 +891,7 @@ public class GMLVQCore implements Serializable {
                                 + Arrays.toString(this.costFunctionWeights));
             }
 
+            GMLVQCore gmlvqCore = new GMLVQCore(this);
             // this is used to set up the Visualizer
             if (this.visualization) {
                 int numberOfPrototypes = 0;
@@ -907,10 +904,10 @@ public class GMLVQCore implements Serializable {
                 for (CostFunctionValue value : this.additionalCostFunctions) {
                     costFunctions.put(value, null);
                 }
-                this.observe(new GMLVQDefaultObserver(instances, finalNumberOfPrototypes, costFunctions));
+                this.observe(new GMLVQDefaultObserver(gmlvqCore, instances, finalNumberOfPrototypes, costFunctions));
             }
 
-            return new GMLVQCore(this);
+            return gmlvqCore;
         }
 
         private boolean anyCostFunctionRequiresConfusionMatrix() {
@@ -925,4 +922,40 @@ public class GMLVQCore implements Serializable {
             return false;
         }
     }
+
+    public String getDetailString() {
+        StringBuilder sb = new StringBuilder();
+        appendParameter(sb, "number of data points", dataPoints.size());
+        appendParameter(sb, "number of features", dataDimension);
+        appendParameter(sb, "number of classes", numberOfClasses);
+        appendParameter(sb, "ratio of data points learned per epoch", dataPointRatioPerRound);
+        appendParameter(sb, "number of prototypes per class", numberOfPrototypesPerClass);
+        appendParameter(sb, "initial learning rate", learnRateChange);
+        appendParameter(sb, "initial prototype learning rate change", prototypeLearningRate);
+        appendParameter(sb, "sigmoid function interval start", sigmoidSigmaIntervalStart);
+        appendParameter(sb, "sigmoid function interval end", sigmoidSigmaIntervalEnd);
+        appendParameter(sb, "matrix learning", matrixLearning);
+        if (matrixLearning) {
+            appendParameter(sb, "omega matrix dimension", omegaDimension);
+            appendParameter(sb, "initial omega matrix learning rate change", omegaLearningRate);
+        }
+        appendParameter(sb, "parallel execution", parallelExecution);
+        appendParameter(sb, "visualization", visualization);
+        appendParameter(sb, "termination - epochs above", numberOfTotalEpochs);
+        appendParameter(sb, "termination - rate change below", stopCriterion);
+        return sb.toString();
+    }
+
+    private void appendParameter(StringBuilder sb, String description, double value) {
+        sb.append(description).append(": ").append(value).append(System.lineSeparator());
+    }
+
+    private void appendParameter(StringBuilder sb, String description, int value) {
+        sb.append(description).append(": ").append(value).append(System.lineSeparator());
+    }
+
+    private void appendParameter(StringBuilder sb, String description, boolean value) {
+        sb.append(description).append(": ").append(value).append(System.lineSeparator());
+    }
+
 }

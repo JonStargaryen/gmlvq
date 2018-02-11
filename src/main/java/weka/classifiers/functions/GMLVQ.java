@@ -18,6 +18,7 @@ import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.Observer;
 import weka.classifiers.functions.gmlvq.model.Prototype;
 import weka.classifiers.functions.gmlvq.model.WekaModelConverter;
+import weka.classifiers.functions.gmlvq.visualization.VisualizationSingleton;
 import weka.classifiers.functions.gmlvq.visualization.Visualizer;
 import weka.core.AdditionalMeasureProducer;
 import weka.core.Capabilities;
@@ -194,7 +195,7 @@ public class GMLVQ extends AbstractClassifier
 
     private GMLVQCore gmlvqInstance;
 
-    private transient Visualizer visualizer;
+    private transient VisualizationSingleton visualizationSingleton;
 
     public GMLVQ() {
         this.builder = new Builder();
@@ -204,8 +205,6 @@ public class GMLVQ extends AbstractClassifier
     public void buildClassifier(Instances trainingData) throws Exception {
 
         getCapabilities().testWithFail(trainingData);
-
-        System.out.println(trainingData);
 
         final List<DataPoint> convertedTrainingData = WekaModelConverter.createDataPoints(trainingData);
         final Map<Double, String> classNamesForDouble = WekaModelConverter.extractClassLables(trainingData);
@@ -229,14 +228,15 @@ public class GMLVQ extends AbstractClassifier
 
         if (this.builder.isVisualization()) {
             SwingUtilities.invokeAndWait(new Runnable() {
-
                 @Override
                 public void run() {
-                    GMLVQ.this.visualizer = new Visualizer(convertedTrainingData, classNamesForDouble, attributeNames,
-                            finalNumberOfPrototypes, costFunctions);
-                    GMLVQ.this.visualizer.setVisible(true);
+                    VisualizationSingleton.addVisualization(new Visualizer(gmlvqInstance, convertedTrainingData, classNamesForDouble, attributeNames, finalNumberOfPrototypes, costFunctions));
+                    VisualizationSingleton.showVisualizations();
                 }
+
             });
+            updatePrototypes(this.gmlvqInstance.getPrototypes());
+            updateLambdaMatrix(this.gmlvqInstance.getLambdaMatrix());
         }
 
         this.gmlvqInstance.buildClassifier();
@@ -765,16 +765,16 @@ public class GMLVQ extends AbstractClassifier
 
     @Override
     public void updatePrototypes(List<Prototype> prototypes) {
-        this.visualizer.updatePrototypes(prototypes);
+        VisualizationSingleton.getLastVisualizalizer().updatePrototypes(prototypes);
     }
 
     @Override
     public void updateCostFunctions(Map<CostFunctionValue, Double> currentCostValues) {
-        this.visualizer.updateCostFunctions(currentCostValues);
+        VisualizationSingleton.getLastVisualizalizer().updateCostFunctions(currentCostValues);
     }
 
     @Override
     public void updateLambdaMatrix(Matrix lambdaMatrix) {
-        this.visualizer.updateLambdaMatrix(lambdaMatrix);
+        VisualizationSingleton.getLastVisualizalizer().updateLambdaMatrix(lambdaMatrix);
     }
 }

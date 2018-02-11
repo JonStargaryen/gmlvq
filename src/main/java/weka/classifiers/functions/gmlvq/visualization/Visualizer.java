@@ -17,18 +17,19 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import weka.classifiers.functions.gmlvq.core.GMLVQCore;
 import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
 import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.Prototype;
 import weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations;
 import weka.core.matrix.Matrix;
 
-public class Visualizer extends JFrame {
+public class Visualizer extends JTabbedPane {
 
     private static final long serialVersionUID = 1L;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private VisualizerMouseAdapter mouseAdapter;
+    private RunDetailsPanel runDetailsPanel;
     private LambdaMatrixPanel panelLambdaMatrix;
     private CostFunctionChartPanel panelCostFunctionChart;
     private FeatureImpactPanel panelFeatureInfluence;
@@ -40,30 +41,23 @@ public class Visualizer extends JFrame {
     private JCheckBox checkBoxShowScale;
     private JButton buttonExport;
 
-    public Visualizer(List<DataPoint> dataPoints, Map<Double, String> classNamesForDouble, String[] attributeNames,
-            int numberOfPrototypes, Map<CostFunctionValue, Double> currentCostValues) {
+    public Visualizer(GMLVQCore gmlvqCore, List<DataPoint> dataPoints, Map<Double, String> classNamesForDouble, String[] attributeNames,
+                      int numberOfPrototypes, Map<CostFunctionValue, Double> currentCostValues) {
 
-        this.panelLambdaMatrix = new LambdaMatrixPanel(attributeNames,this.colorScale);
+        this.runDetailsPanel = new RunDetailsPanel(gmlvqCore);
+        this.panelLambdaMatrix = new LambdaMatrixPanel(attributeNames, this.colorScale);
         this.panelFeatureInfluence = new FeatureImpactPanel(attributeNames, this.colorScale);
         this.mouseAdapter = new VisualizerMouseAdapter(this);
         this.panelCostFunctionChart = new CostFunctionChartPanel(currentCostValues);
 
-        this.panelFeatureAnalysis = new FeatureAnalysisPanel(this.mouseAdapter, dataPoints, classNamesForDouble,
-                attributeNames, numberOfPrototypes);
+        this.panelFeatureAnalysis = new FeatureAnalysisPanel(this.mouseAdapter, dataPoints, classNamesForDouble, attributeNames, numberOfPrototypes);
         initializeInterface();
     }
 
     private void initializeInterface() {
 
-        this.setTitle("GMLVQ Live Visualization from " + LocalDateTime.now().format(formatter));
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        this.setSize(800, 600);
-
-        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-
         JPanel panelLambdaMatrix = new JPanel();
-        tabbedPane.addTab("Lambda matrix", panelLambdaMatrix);
+        addTab("Lambda matrix", panelLambdaMatrix);
         panelLambdaMatrix.setLayout(new BorderLayout(0, 0));
         panelLambdaMatrix.add(this.panelLambdaMatrix);
 
@@ -82,10 +76,11 @@ public class Visualizer extends JFrame {
         this.buttonExport.addMouseListener(this.mouseAdapter);
         toolBarMatrix.add(this.buttonExport);
 
-        tabbedPane.addTab("Plots", this.panelCostFunctionChart);
-        tabbedPane.addTab("Feature Influence", this.panelFeatureInfluence);
-        tabbedPane.addTab("Feature Analysis", this.panelFeatureAnalysis);
-        tabbedPane.setSelectedIndex(0);
+        addTab("Cost funktions", this.panelCostFunctionChart);
+        addTab("Feature Influence", this.panelFeatureInfluence);
+        addTab("Feature Analysis", this.panelFeatureAnalysis);
+        addTab("Run details", this.runDetailsPanel);
+        setSelectedIndex(0);
 
     }
 
@@ -132,7 +127,6 @@ public class Visualizer extends JFrame {
         float minValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MINIMAL_INDEX];
         float maxValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MAXIMAL_INDEX];
         this.colorScale = new ColorScale.Builder(minValue, maxValue).build();
-
         this.panelLambdaMatrix.setLambdaMatrix(lambdaMatrix);
         this.panelLambdaMatrix.repaint();
         this.panelFeatureInfluence.setLambdaMatrix(lambdaMatrix);
