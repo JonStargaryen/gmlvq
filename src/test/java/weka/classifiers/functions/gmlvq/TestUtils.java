@@ -1,11 +1,11 @@
 package weka.classifiers.functions.gmlvq;
 
-import java.io.InputStream;
-
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Normalize;
+
+import java.io.InputStream;
 
 public final class TestUtils {
 
@@ -16,6 +16,7 @@ public final class TestUtils {
         String IRIS = "iris.arff";
         String IRIS_2_CLASSES = "iris_2classes.arff";
         String TECATOR_D = "tecatorD.arff";
+        String MEMBRANE_TOPOLOGY_GUTTERIDGE_4 = "4-gutteridge.arff";
     }
 
     private TestUtils() {

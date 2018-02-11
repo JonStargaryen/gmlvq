@@ -1,10 +1,5 @@
 package weka.classifiers.functions.gmlvq.core;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
 import weka.classifiers.functions.GMLVQ;
 import weka.classifiers.functions.gmlvq.core.cost.CostFunctionCalculator;
 import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
@@ -16,6 +11,11 @@ import weka.classifiers.functions.gmlvq.utilities.DataRandomizer;
 import weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations;
 import weka.classifiers.functions.gmlvq.visualization.Visualizer;
 import weka.core.matrix.Matrix;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * The instance directing the learning process. For each epoch
@@ -54,7 +54,7 @@ public class UpdateManager implements Serializable {
 
     private final double initialCostValueToOptimize;
 
-    private Observer observer;
+    private transient Observer observer;
 
     private Matrix lambdaMatrix;
 
