@@ -812,10 +812,10 @@ public class GMLVQCore implements Serializable {
             return this;
         }
 
-//        public Builder visualization(boolean visualization) {
-//            this.visualization = visualization;
-//            return this;
-//        }
+        public Builder visualization(boolean visualization) {
+            this.visualization = visualization;
+            return this;
+        }
 
         public Builder seed(long seed) {
             this.seed = seed;

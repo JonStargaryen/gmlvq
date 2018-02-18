@@ -21,7 +21,7 @@ public class GMLVQVisualizerTest {
 
     @Before
     public void setup() throws Exception {
-        instances = TestUtils.loadDataset(TestUtils.Datasets.MEMBRANE_TOPOLOGY_GUTTERIDGE_4);
+        instances = TestUtils.loadDataset(TestUtils.Datasets.HDS);
         dataPoints = WekaModelConverter.createDataPoints(instances);
         gmlvq = new GMLVQCore.Builder().numberOfEpochs(1000)
                                        .numberOfPrototypesPerClass(4)

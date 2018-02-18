@@ -42,8 +42,8 @@ public class FeatureImpactPanel extends JPanel {
         this.add(descriptionPane, BorderLayout.NORTH);
 
         this.tableModel = new DefaultTableModel();
-        this.tableModel.setDataVector(new String[][] { { "Pre", "pare", "ing" } },
-                new String[] { "color", "feature", "value" });
+        this.tableModel.setDataVector(new String[][]{{"Pre", "pare", "ing"}},
+                new String[]{"color", "feature", "value"});
         JTable featureTable = new JTable(this.tableModel) {
 
             private static final long serialVersionUID = 1L;
@@ -52,8 +52,10 @@ public class FeatureImpactPanel extends JPanel {
             public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int columnIndex) {
                 JComponent component = (JComponent) super.prepareRenderer(renderer, rowIndex, columnIndex);
                 if (columnIndex == 0) {
-                    component.setBackground(FeatureImpactPanel.this.colorScale
-                            .getColor(Float.valueOf(getValueAt(rowIndex, 2).toString())));
+                    if (tableModel.getColumnCount() >= 2 && !getValueAt(rowIndex, 2).toString().equals("ing")) {
+                        component.setBackground(FeatureImpactPanel.this.colorScale
+                                .getColor(Float.valueOf(getValueAt(rowIndex, 2).toString())));
+                    }
                 } else {
                     component.setBackground(FeatureImpactPanel.this.getBackground());
                 }
@@ -91,9 +93,9 @@ public class FeatureImpactPanel extends JPanel {
         float maxValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MAXIMAL_INDEX];
         this.colorScale = new ColorScale.Builder(minValue, maxValue).build();
 
-        String[] cols = { "color", "feature", "value" };
+        String[] cols = {"color", "feature", "value"};
         Iterator<Entry<String, Double>> it = this.featureImportance.iterator();
-        int maxFeatureIndex =  attributeNames.length < 15 ? attributeNames.length : 15;
+        int maxFeatureIndex = attributeNames.length < 15 ? attributeNames.length : 15;
         int currentFeatureIndex = 0;
 
         String[][] data = new String[maxFeatureIndex][3];
