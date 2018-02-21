@@ -33,8 +33,8 @@ public class CostFunctionCalculator implements Serializable {
     private Map<CostFunctionValue, CostFunction> persistentCostFunctions;
     private double costFunctionBeta;
     private double[] costFunctionWeights;
-    public static final double DEFAULT_BETA = 0.5;
-    public static final double[] DEFAULT_WEIGHTS = new double[] { 1.0, 0.0 };
+    public static final double DEFAULT_BETA = 2.0;
+    public static final double[] DEFAULT_WEIGHTS = new double[] { 1.0, 1.0 };
 
     public CostFunctionCalculator(SigmoidFunction sigmoidFunction, double costFunctionBeta,
             double[] costFunctionWeights, CostFunctionValue costFunctionValueToOptimize,
