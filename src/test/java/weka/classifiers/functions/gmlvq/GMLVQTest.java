@@ -1,18 +1,15 @@
 package weka.classifiers.functions.gmlvq;
 
-import static org.junit.Assert.fail;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import weka.classifiers.functions.GMLVQ;
-import weka.classifiers.functions.gmlvq.core.GMLVQCore;
-import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
 import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.WekaModelConverter;
 import weka.core.Instances;
+
+import java.util.List;
+
+import static org.junit.Assert.fail;
 
 public class GMLVQTest {
 
@@ -31,6 +28,7 @@ public class GMLVQTest {
 
             // create GMLVQ instance with requested parameters
             gmlvq = new GMLVQ();
+            gmlvq.setMatrixLearning(false);
             gmlvq.setVisualization(true);
 
             // this.gmlvq = new GMLVQCore.Builder()/* .matrixLearning(false) */
@@ -41,15 +39,13 @@ public class GMLVQTest {
             fail("could not set up test, as:\n" + e.getMessage());
         }
 
-
-
     }
 
     @Test
     public void shouldRunClassifier() {
         try {
-            System.out.println();
             gmlvq.buildClassifier(instances);
+            Thread.sleep(1000*60);
         } catch (Exception e) {
             fail("could not run GMLVQ, as:\n" + e.getMessage());
         }

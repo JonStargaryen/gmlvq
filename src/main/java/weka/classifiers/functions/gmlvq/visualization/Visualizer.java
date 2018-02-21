@@ -1,28 +1,18 @@
 package weka.classifiers.functions.gmlvq.visualization;
 
-import java.awt.BorderLayout;
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import weka.classifiers.functions.gmlvq.core.GMLVQCore;
 import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
 import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.Prototype;
 import weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations;
 import weka.core.matrix.Matrix;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 public class Visualizer extends JTabbedPane {
 
@@ -45,40 +35,44 @@ public class Visualizer extends JTabbedPane {
                       int numberOfPrototypes, Map<CostFunctionValue, Double> currentCostValues) {
 
         this.runDetailsPanel = new RunDetailsPanel(gmlvqCore);
-        this.panelLambdaMatrix = new LambdaMatrixPanel(attributeNames, this.colorScale);
-        this.panelFeatureInfluence = new FeatureImpactPanel(attributeNames, this.colorScale);
-        this.mouseAdapter = new VisualizerMouseAdapter(this);
+        if (gmlvqCore.isMatrixLearning()) {
+            this.panelLambdaMatrix = new LambdaMatrixPanel(attributeNames, this.colorScale);
+            this.panelFeatureInfluence = new FeatureImpactPanel(attributeNames, this.colorScale);
+            this.mouseAdapter = new VisualizerMouseAdapter(this);
+        }
         this.panelCostFunctionChart = new CostFunctionChartPanel(currentCostValues);
-
         this.panelFeatureAnalysis = new FeatureAnalysisPanel(this.mouseAdapter, dataPoints, classNamesForDouble, attributeNames, numberOfPrototypes);
-        initializeInterface();
+        initializeInterface(gmlvqCore);
     }
 
-    private void initializeInterface() {
+    private void initializeInterface(GMLVQCore gmlvqCore) {
 
-        JPanel panelLambdaMatrix = new JPanel();
-        addTab("Lambda matrix", panelLambdaMatrix);
-        panelLambdaMatrix.setLayout(new BorderLayout(0, 0));
-        panelLambdaMatrix.add(this.panelLambdaMatrix);
+        if (gmlvqCore.isMatrixLearning()) {
+            JPanel panelLambdaMatrix = new JPanel();
+            addTab("Lambda matrix", panelLambdaMatrix);
+            panelLambdaMatrix.setLayout(new BorderLayout(0, 0));
+            panelLambdaMatrix.add(this.panelLambdaMatrix);
 
-        JToolBar toolBarMatrix = new JToolBar();
-        toolBarMatrix.setFloatable(false);
-        panelLambdaMatrix.add(toolBarMatrix, BorderLayout.NORTH);
+            JToolBar toolBarMatrix = new JToolBar();
+            toolBarMatrix.setFloatable(false);
+            panelLambdaMatrix.add(toolBarMatrix, BorderLayout.NORTH);
 
-        this.checkBoxShowScale = new JCheckBox("Show scale");
-        this.checkBoxShowScale.setName("SHOW_SCALE");
-        this.checkBoxShowScale.setSelected(true);
-        this.checkBoxShowScale.addMouseListener(this.mouseAdapter);
-        toolBarMatrix.add(this.checkBoxShowScale);
+            this.checkBoxShowScale = new JCheckBox("Show scale");
+            this.checkBoxShowScale.setName("SHOW_SCALE");
+            this.checkBoxShowScale.setSelected(true);
+            this.checkBoxShowScale.addMouseListener(this.mouseAdapter);
+            toolBarMatrix.add(this.checkBoxShowScale);
 
-        this.buttonExport = new JButton("Export");
-        this.buttonExport.setName("EXPORT_LAMBDA_MATRIX");
-        this.buttonExport.addMouseListener(this.mouseAdapter);
-        toolBarMatrix.add(this.buttonExport);
+            this.buttonExport = new JButton("Export");
+            this.buttonExport.setName("EXPORT_LAMBDA_MATRIX");
+            this.buttonExport.addMouseListener(this.mouseAdapter);
+            toolBarMatrix.add(this.buttonExport);
 
-        addTab("Cost funktions", this.panelCostFunctionChart);
-        addTab("Feature Influence", this.panelFeatureInfluence);
-        addTab("Feature Analysis", this.panelFeatureAnalysis);
+            addTab("Feature influence", this.panelFeatureInfluence);
+        }
+
+        addTab("Cost functions", this.panelCostFunctionChart);
+        addTab("Feature analysis", this.panelFeatureAnalysis);
         addTab("Run details", this.runDetailsPanel);
         setSelectedIndex(0);
 
@@ -115,7 +109,6 @@ public class Visualizer extends JTabbedPane {
 
     public void updatePrototypes(List<Prototype> prototypes) {
         this.panelFeatureAnalysis.setPrototypes(prototypes);
-
     }
 
     public void updateCostFunctions(Map<CostFunctionValue, Double> currentCostValues) {

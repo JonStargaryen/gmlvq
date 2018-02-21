@@ -2,9 +2,7 @@ package weka.classifiers.functions.gmlvq;
 
 import org.junit.Before;
 import org.junit.Test;
-import weka.classifiers.functions.GMLVQ;
 import weka.classifiers.functions.gmlvq.core.GMLVQCore;
-import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
 import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.WekaModelConverter;
 import weka.core.Instances;
@@ -21,14 +19,12 @@ public class GMLVQVisualizerTest {
 
     @Before
     public void setup() throws Exception {
-        instances = TestUtils.loadDataset(TestUtils.Datasets.HDS);
+        instances = TestUtils.loadDataset(TestUtils.Datasets.IRIS_2_CLASSES);
         dataPoints = WekaModelConverter.createDataPoints(instances);
         gmlvq = new GMLVQCore.Builder().numberOfEpochs(1000)
                                        .numberOfPrototypesPerClass(4)
                                        .dataPointRatioPerRound(0.8)
-                                       .costFunctionToOptimize(CostFunctionValue.CLASSIFICATION_ERROR)
                                        .buildAndShow(dataPoints, instances);
-
 
     }
 

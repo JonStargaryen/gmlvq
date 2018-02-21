@@ -1,14 +1,5 @@
 package weka.classifiers.functions;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.swing.SwingUtilities;
-
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.functions.gmlvq.core.GMLVQCore;
 import weka.classifiers.functions.gmlvq.core.GMLVQCore.Builder;
@@ -20,60 +11,60 @@ import weka.classifiers.functions.gmlvq.model.Prototype;
 import weka.classifiers.functions.gmlvq.model.WekaModelConverter;
 import weka.classifiers.functions.gmlvq.visualization.VisualizationSingleton;
 import weka.classifiers.functions.gmlvq.visualization.Visualizer;
-import weka.core.AdditionalMeasureProducer;
-import weka.core.Capabilities;
+import weka.core.*;
 import weka.core.Capabilities.Capability;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.Option;
-import weka.core.Randomizable;
-import weka.core.SelectedTag;
-import weka.core.Tag;
-import weka.core.TechnicalInformation;
-import weka.core.TechnicalInformationHandler;
-import weka.core.Utils;
 import weka.core.matrix.Matrix;
+
+import javax.swing.*;
+import java.util.*;
 
 /**
  * the adapter of {@link GMLVQCore} to weka's data structure, input options as
  * well as its GUI integration<br />
  *
- * @see {@link GMLVQCore} for details on GMLVQ's implementation
- *
  * @author S
- *
+ * @see {@link GMLVQCore} for details on GMLVQ's implementation
  */
 public class GMLVQ extends AbstractClassifier
         implements TechnicalInformationHandler, Randomizable, AdditionalMeasureProducer, Observer {
 
     /**
      * The interface provides all default values and options essential for the
-     * The interface provides all default values and options essential for the
      * algorithm.
      */
     public interface AlgorithmSettings {
 
-        /** the default number of epochs used for training */
+        /**
+         * the default number of epochs used for training
+         */
         int DEFAULT_NUMBER_OF_EPOCHS = 2000;
         Option NUMBER_OF_EPOCHS_OPTION = new Option("\tnumber of maximal epochs before stop\n", "E", 1,
                 "-E <number of maximal epochs>");
 
-        /** the default number of prototypes used to represent each class */
+        /**
+         * the default number of prototypes used to represent each class
+         */
         int DEFAULT_NUMBER_OF_PROTOTYPES_PER_CLASS = 1;
         Option NUMBER_OF_PROTOTYPES_OPTION = new Option("\tnumber of prototypes per class\n", "P", 1,
                 "-P <number of prototypes per class>");
 
-        /** the default value of the stop criterion */
+        /**
+         * the default value of the stop criterion
+         */
         double DEFAULT_STOP_CRITERION = 1E-9;
         Option STOP_CRITERION_OPTION = new Option("\tstop criterion for change in cost function\n", "S", 1,
                 "-S <stop criterion for change in cost function>");
 
-        /** the default setting of matrix omega should be visualized */
+        /**
+         * the default setting of matrix omega should be visualized
+         */
         boolean DEFAULT_VISUALIZATION = true;
         Option VISUALIZATION_OPTION = new Option("\tvisualization of relevance matrix during learning\n", "V", 0,
                 "enable visualization during learning");
 
-        /** the default percentage of trainingData points used per round */
+        /**
+         * the default percentage of trainingData points used per round
+         */
         double DEFAULT_DATA_POINT_RATIO_PER_ROUND = 0.1;
         Option DATA_POINTS_PER_ROUND_OPTION = new Option(
                 "\tpercentage of trainingData points per round for pseudo batch\n", "R", 1,
@@ -97,22 +88,30 @@ public class GMLVQ extends AbstractClassifier
      */
     public interface MethodSettings {
 
-        /** the default prototype learning rate */
+        /**
+         * the default prototype learning rate
+         */
         double DEFAULT_PROTOYPE_LEARNING_RATE = 1.0;
         Option PROTOYPE_LEARNING_RATE_OPTION = new Option("\tlearning rate of the prototypes\n", "W", 1,
                 "-W <prototype learning rate>");
 
-        /** the default learning rate of the omega matrix */
+        /**
+         * the default learning rate of the omega matrix
+         */
         double DEFAULT_OMEGA_LEARNING_RATE = 1.0;
         Option OMEGA_LEARNING_RATE_OPTION = new Option(
                 "\tlearning rate of the omega matrix used for relevance learning\n", "O", 1,
                 "-O <omega learning rate>");
 
-        /** the default boolean if mode is GMLVQ (true) or GLVQ (false) */
+        /**
+         * the default boolean if mode is GMLVQ (true) or GLVQ (false)
+         */
         boolean DEFAULT_MATRIX_LEARNING = true;
         Option MATRIX_LEARNING_OPTION = new Option("\tis matrix learning\n", "M", 0, "enable matrix learning");
 
-        /** the default dimension of matrix omega */
+        /**
+         * the default dimension of matrix omega
+         */
         int DEFAULT_OMEGA_DIMENSION = 1;
         Option OMEGA_DIMENSION_OPTION = new Option("\tdimension of matrix omega\n", "D", 1,
                 "-D <dimension of matrix omega>");
@@ -121,7 +120,9 @@ public class GMLVQ extends AbstractClassifier
         Option LEARN_RATE_CHANGE_OPTION = new Option("\tthe amount the learning rate is changed\n", "L", 1,
                 "-L <learning rate change>");
 
-        /** {@code true} iff GMLVQ shoud be executed in parallel. **/
+        /**
+         * {@code true} iff GMLVQ shoud be executed in parallel.
+         **/
         boolean DEFAULT_PARALLEL_EXECUTION = false;
         Option PARALLEL_EXECUTION_OPTION = new Option("\texecution in parallel\n", "X", 0,
                 "enable parallel excecution");
@@ -133,28 +134,32 @@ public class GMLVQ extends AbstractClassifier
     public interface CostFunctionsSettings {
 
         // declare cost functions to optimize
-        Tag[] AVAILIABLE_COST_FUNCTIONS = new Tag[] {
+        Tag[] AVAILIABLE_COST_FUNCTIONS = new Tag[]{
                 new Tag(CostFunctionValue.DEFAULT_COST.ordinal(), "default cost function"),
                 new Tag(CostFunctionValue.CLASSIFICATION_ERROR.ordinal(), "classification error function"),
                 new Tag(CostFunctionValue.FMEASURE.ordinal(), "F-measure-based cost function"),
                 new Tag(CostFunctionValue.PRECISION_RECALL.ordinal(), "precision-recall cost function"),
-                new Tag(CostFunctionValue.WEIGHTED_ACCURACY.ordinal(), "weighted accuracy-based cost function") };
+                new Tag(CostFunctionValue.WEIGHTED_ACCURACY.ordinal(), "weighted accuracy-based cost function")};
 
         // declare additional cost functions
-        Tag[] AVAILIABLE_ADDITIONAL_COST_FUNCTIONS = new Tag[] {
+        Tag[] AVAILIABLE_ADDITIONAL_COST_FUNCTIONS = new Tag[]{
                 new Tag(CostFunctionValue.NONE.ordinal(), "no additional cost function"),
                 new Tag(CostFunctionValue.DEFAULT_COST.ordinal(), "default cost function"),
                 new Tag(CostFunctionValue.CLASSIFICATION_ERROR.ordinal(), "classification error function"),
                 new Tag(CostFunctionValue.FMEASURE.ordinal(), "F-measure-based cost function"),
                 new Tag(CostFunctionValue.PRECISION_RECALL.ordinal(), "precision-recall cost function"),
-                new Tag(CostFunctionValue.WEIGHTED_ACCURACY.ordinal(), "weighted accuracy-based cost function") };
+                new Tag(CostFunctionValue.WEIGHTED_ACCURACY.ordinal(), "weighted accuracy-based cost function")};
 
-        /** the cost function to optimize */
+        /**
+         * the cost function to optimize
+         */
         CostFunctionValue DEFAULT_COST_FUNCTION_TO_OPTIMIZE = CostFunctionValue.DEFAULT_COST;
         Option COST_FUNCTION_TO_OPTIMIZE_OPTION = new Option("\tcost function to optimize", "C", 1,
                 "-C <cost function to optimize>");
 
-        /** the additional cost function that should be computed **/
+        /**
+         * the additional cost function that should be computed
+         **/
         CostFunctionValue DEFAULT_ADDITIONAL_COST_FUNCTION = CostFunctionValue.NONE;
         Option ADDITIONAL_COST_FUNCTION_OPTION = new Option("\tadditional cost function to compute", "A", 1,
                 "-A <additional cost function>");
@@ -182,8 +187,7 @@ public class GMLVQ extends AbstractClassifier
     /**
      * Main method for testing this class
      *
-     * @param argv
-     *            the commandline options
+     * @param argv the commandline options
      */
     public static void main(String[] argv) {
         runClassifier(new GMLVQ(), argv);
@@ -440,7 +444,7 @@ public class GMLVQ extends AbstractClassifier
      * Returns a string describing classifier
      *
      * @return a description suitable for displaying in the
-     *         explorer/experimenter gui
+     * explorer/experimenter gui
      */
     public String globalInfo() {
         return "An implementation of the GMLVQ and GLVQ algorithm.";
@@ -775,6 +779,8 @@ public class GMLVQ extends AbstractClassifier
 
     @Override
     public void updateLambdaMatrix(Matrix lambdaMatrix) {
-        VisualizationSingleton.getLastVisualizalizer().updateLambdaMatrix(lambdaMatrix);
+        if (isMatrixLearning()) {
+            VisualizationSingleton.getLastVisualizalizer().updateLambdaMatrix(lambdaMatrix);
+        }
     }
 }

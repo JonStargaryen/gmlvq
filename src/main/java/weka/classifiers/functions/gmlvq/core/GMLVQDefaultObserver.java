@@ -25,6 +25,8 @@ import java.util.Map;
  */
 public class GMLVQDefaultObserver implements Observer {
 
+    private boolean updateMatrix;
+
     public GMLVQDefaultObserver(GMLVQCore gmlvqCore, Instances trainingData, int numberOfPrototypes,
                                 Map<CostFunctionValue, Double> currentCostValues) {
 
@@ -33,6 +35,8 @@ public class GMLVQDefaultObserver implements Observer {
         final String[] attributeNames = WekaModelConverter.extractAttributeNames(trainingData);
         final int finalNumberOfPrototypes = numberOfPrototypes;
         final Map<CostFunctionValue, Double> finalCurrentCostValues = currentCostValues;
+
+        this.updateMatrix = gmlvqCore.isMatrixLearning();
 
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
@@ -63,7 +67,9 @@ public class GMLVQDefaultObserver implements Observer {
 
     @Override
     public void updatePrototypes(List<Prototype> prototypes) {
-        VisualizationSingleton.getLastVisualizalizer().updatePrototypes(prototypes);
+        if (updateMatrix) {
+            VisualizationSingleton.getLastVisualizalizer().updatePrototypes(prototypes);
+        }
     }
 
 }
