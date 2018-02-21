@@ -8,7 +8,7 @@ PackageName=gmlvq
 Version=1.0.0
 
 #Date (year-month-day)
-Date=2016-01-01
+Date=2018-03-01
 
 # Title (required)
 Title=Generalized Matrix Learning Vector Quantization
@@ -17,16 +17,16 @@ Title=Generalized Matrix Learning Vector Quantization
 Category=Classification
 
 # Author (required)
-Author=Sebastian Bittrich <bittrich@hs-mittweida.de>, Florian Kaiser <kaiser1@hs-mittweida.de>, Christoph Leberecht <leberech@hs-mittweida.de>, Marika Kaden <kaden@hs-mittweida.de>
+Author=Sebastian Bittrich <bittrich@hs-mittweida.de>, Marika Kaden <kaden@hs-mittweida.de>, Christoph Leberecht <leberech@hs-mittweida.de>, Florian Kaiser <kaiser1@hs-mittweida.de>
 
 # Maintainer (required)
-Maintainer=gmlvq@bioforscher.de
+Maintainer=bittrich@hs-mittweida.de
 
 # License (required)
 License=GPL 2.0
 
 # Description (required)
-Description=An implementation of the GMLVQ ang GLVQ algorithm used for prototype-based classification with the possibility for intrinsic data correlation and classification impact analysis.
+Description=An implementation of the Generalized Learning Vector Quantization (GLVQ) classifier with metric adaptation and the possibility to change the cost function for optimizing statistical measurements.
 
 # Package URL for obtaining the package archive (required)
 PackageURL=http://bioforscher.de/weka/gmlvq.zip?download
@@ -41,7 +41,7 @@ URL=http://bioforscher.de/weka/gmlvq
 #Related=packageName1,packageName2,...
 
 # Dependencies (format: packageName (equality/inequality version_number)
-Depends=weka (>=3.7.1)
+Depends=weka (>=3.8.1)
 
 # Message to display in installation. Can be used to provide
 # special instructions (e.g. manual stuff needed to complete

@@ -278,8 +278,6 @@ public class GMLVQ extends AbstractClassifier
         result.disableAll();
         // attributes
         result.enable(Capability.NUMERIC_ATTRIBUTES);
-//        result.enable(Capability.BINARY_ATTRIBUTES);
-//        result.enable(Capability.NOMINAL_ATTRIBUTES);
         // class
         result.enable(Capability.NOMINAL_CLASS);
         return result;
@@ -520,7 +518,7 @@ public class GMLVQ extends AbstractClassifier
     }
 
     public String parallelExecutionTipText() {
-        return "determines wheter the the classifier is build in parallel or not";
+        return "determines whether the the classifier is build in parallel or not";
     }
 
     public String prototypeLearningRateTipText() {
