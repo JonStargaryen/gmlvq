@@ -1,21 +1,15 @@
 package weka.classifiers.functions.gmlvq.visualization;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGUtils;
+import weka.core.matrix.Matrix;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-
-import javax.swing.JPanel;
-import javax.swing.ToolTipManager;
-
-import org.jfree.graphics2d.svg.SVGGraphics2D;
-import org.jfree.graphics2d.svg.SVGUtils;
-
-import weka.core.matrix.Matrix;
 
 public class LambdaMatrixPanel extends JPanel {
 
@@ -109,9 +103,9 @@ public class LambdaMatrixPanel extends JPanel {
     }
 
     public void exportLambdaMatrixToSVG(File file) {
-        SVGGraphics2D g2 = new SVGGraphics2D(300, 200);
+        SVGGraphics2D g2 = new SVGGraphics2D(getRenderer().getMatrixDrawWidth(), getRenderer().getMatrixDrawHeight());
         g2.setBackground(Color.WHITE);
-        this.getRenderer().draw(g2, this.getLambdaMatrix());
+        getRenderer().draw(g2, getLambdaMatrix());
         String svgElement = g2.getSVGElement();
         try {
             SVGUtils.writeToSVG(file, svgElement);
@@ -125,7 +119,7 @@ public class LambdaMatrixPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D graphics = (Graphics2D) g;
         if (this.lambdaMatrix != null) {
-            this.getRenderer().draw(graphics, this.getLambdaMatrix());
+            this.getRenderer().draw(graphics, getLambdaMatrix());
         } else {
             graphics.setColor(Color.BLACK);
             graphics.drawString("Initializing ...", 10, 25);

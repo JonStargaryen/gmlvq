@@ -3,6 +3,7 @@ package weka.classifiers.functions.gmlvq;
 import org.junit.Before;
 import org.junit.Test;
 import weka.classifiers.functions.GMLVQ;
+import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
 import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.WekaModelConverter;
 import weka.core.Instances;
@@ -28,12 +29,12 @@ public class GMLVQTest {
 
             // create GMLVQ instance with requested parameters
             gmlvq = new GMLVQ();
-            gmlvq.setMatrixLearning(false);
-            gmlvq.setVisualization(true);
+            gmlvq.set_2_matrixLearning(true);
+            gmlvq.set_1_visualization(true);
+            gmlvq.set_1_costFunctionToOptimize(CostFunctionValue.DEFAULT_COST);
+            gmlvq.addAdditionalCostFunction(CostFunctionValue.PRECISION_RECALL);
+            gmlvq.addAdditionalCostFunction(CostFunctionValue.FMEASURE);
 
-            // this.gmlvq = new GMLVQCore.Builder()/* .matrixLearning(false) */
-            //        .costFunctionToOptimize(CostFunctionValue.WEIGHTED_ACCURACY).numberOfEpochs(2500)
-            //        .dataPointRatioPerRound(1.0).build(this.dataPoints);
         } catch (Exception e) {
             e.printStackTrace();
             fail("could not set up test, as:\n" + e.getMessage());

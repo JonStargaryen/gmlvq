@@ -112,7 +112,7 @@ public class Visualizer extends JTabbedPane {
     }
 
     public void updateCostFunctions(Map<CostFunctionValue, Double> currentCostValues) {
-        this.panelCostFunctionChart.addLeatestValues(currentCostValues);
+        this.panelCostFunctionChart.addLatestValues(currentCostValues);
     }
 
     public void updateLambdaMatrix(Matrix lambdaMatrix) {

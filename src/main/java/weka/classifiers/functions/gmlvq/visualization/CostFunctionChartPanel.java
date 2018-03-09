@@ -1,23 +1,5 @@
 package weka.classifiers.functions.gmlvq.visualization;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.RenderingHints;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -28,8 +10,14 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
 import weka.classifiers.functions.gmlvq.core.cost.CostFunctionValue;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.*;
+import java.util.List;
 
 public class CostFunctionChartPanel extends JPanel implements ItemListener {
 
@@ -117,24 +105,35 @@ public class CostFunctionChartPanel extends JPanel implements ItemListener {
         ChartPanel chartPanel = new ChartPanel(this.chart);
         this.add(chartPanel, BorderLayout.CENTER);
 
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        this.add(topPanel, BorderLayout.NORTH);
+
+        JTextPane descriptionPane = new JTextPane();
+        descriptionPane.setText("The following cost functions are evaluated during the learning process. Only one" +
+                " is optimized (see Run details panel), the others are calculated and evaluated for visualization purposes. The displayed value" +
+                " is only valid for the current (sub)set of data points, the cross-validated values are displayed in the WEKA log.");
+        descriptionPane.setEditable(false);
+        descriptionPane.setBackground(this.getBackground());
+        topPanel.add(descriptionPane, BorderLayout.NORTH);
+
         // setup tool bar
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        this.add(toolBar, BorderLayout.NORTH);
+        topPanel.add(toolBar, BorderLayout.SOUTH);
 
         // add check boxes for each cost function
         for (CostFunctionValue costFunction : this.costFunctions) {
             JCheckBox checkBox = new JCheckBox(costFunction.toString());
             checkBox.setName(costFunction.name());
             checkBox.setSelected(true);
-            checkBox.setToolTipText("tooltip ..."); // TODO set me
             checkBox.addItemListener(this);
             toolBar.add(checkBox);
         }
 
     }
 
-    public void addLeatestValues(Map<CostFunctionValue, Double> currentCostValues) {
+    public void addLatestValues(Map<CostFunctionValue, Double> currentCostValues) {
         // add additional cost function values
         for (CostFunctionValue costFunctionValue : currentCostValues.keySet()) {
             if (!costFunctionValue.equals(CostFunctionValue.COST_FUNCTION_VALUE_TO_OPTIMIZE)) {
@@ -154,7 +153,7 @@ public class CostFunctionChartPanel extends JPanel implements ItemListener {
         } else {
             this.chartRenderer.setSeriesVisible(this.chartDataset.getSeriesIndex(componentName), false);
         }
-
     }
+
 
 }

@@ -1,13 +1,11 @@
 package weka.classifiers.functions.gmlvq.visualization;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.io.Serializable;
-import java.text.DecimalFormat;
-
 import weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations;
 import weka.core.matrix.Matrix;
+
+import java.awt.*;
+import java.io.Serializable;
+import java.text.DecimalFormat;
 
 public class MatrixRenderer implements Serializable {
 
@@ -138,6 +136,14 @@ public class MatrixRenderer implements Serializable {
 
     public boolean isShowScale() {
         return this.showScale;
+    }
+
+    public int getMatrixDrawWidth() {
+        return matrixDrawWidth;
+    }
+
+    public int getMatrixDrawHeight() {
+        return matrixDrawHeight;
     }
 
     public void setShowScale(boolean showScale) {

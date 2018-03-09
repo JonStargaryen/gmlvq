@@ -25,8 +25,7 @@ import java.util.*;
  *
  * @author S
  */
-public class GMLVQ extends AbstractClassifier
-        implements TechnicalInformationHandler, Randomizable, AdditionalMeasureProducer, Observer {
+public class GMLVQ extends AbstractClassifier implements TechnicalInformationHandler, Observer {
 
     /**
      * The interface provides all default values and options essential for the
@@ -39,28 +38,28 @@ public class GMLVQ extends AbstractClassifier
          */
         int DEFAULT_NUMBER_OF_EPOCHS = 500;
         Option NUMBER_OF_EPOCHS_OPTION = new Option("\tnumber of maximal epochs before stop\n", "E", 1,
-                                                    "-E <number of maximal epochs>");
+                "-E <number of maximal epochs>");
 
         /**
          * the default number of prototypes used to represent each class
          */
         int DEFAULT_NUMBER_OF_PROTOTYPES_PER_CLASS = 1;
         Option NUMBER_OF_PROTOTYPES_OPTION = new Option("\tnumber of prototypes per class\n", "P", 1,
-                                                        "-P <number of prototypes per class>");
+                "-P <number of prototypes per class>");
 
         /**
          * the default value of the stop criterion
          */
         double DEFAULT_STOP_CRITERION = 1E-9;
         Option STOP_CRITERION_OPTION = new Option("\tstop criterion for change in cost function\n", "S", 1,
-                                                  "-S <stop criterion for change in cost function>");
+                "-S <stop criterion for change in cost function>");
 
         /**
          * the default setting of matrix omega should be visualized
          */
         boolean DEFAULT_VISUALIZATION = true;
         Option VISUALIZATION_OPTION = new Option("\tvisualization of relevance matrix during learning\n", "V", 0,
-                                                 "enable visualization during learning");
+                "enable visualization during learning");
 
         /**
          * the default percentage of trainingData points used per round
@@ -75,9 +74,9 @@ public class GMLVQ extends AbstractClassifier
         double DEFAULT_SIGMOID_SIGMA_INTERVAL_END = 10.0;
 
         String DEFAULT_SIGMOID_SIGMA_INTERVAL = DEFAULT_SIGMOID_SIGMA_INTERVAL_START + ","
-                                                + DEFAULT_SIGMOID_SIGMA_INTERVAL_END;
+                + DEFAULT_SIGMOID_SIGMA_INTERVAL_END;
         Option SIGMOID_SIGMA_INTERVAL_OPTION = new Option("\tthe interval of the sigmoidFunction function\n", "I", 2,
-                                                          "-I <start,end>");
+                "-I <start,end>");
     }
 
     /**
@@ -91,7 +90,7 @@ public class GMLVQ extends AbstractClassifier
          */
         double DEFAULT_PROTOYPE_LEARNING_RATE = 1.0;
         Option PROTOYPE_LEARNING_RATE_OPTION = new Option("\tlearning rate of the prototypes\n", "W", 1,
-                                                          "-W <prototype learning rate>");
+                "-W <prototype learning rate>");
 
         /**
          * the default learning rate of the omega matrix
@@ -112,18 +111,18 @@ public class GMLVQ extends AbstractClassifier
          */
         int DEFAULT_OMEGA_DIMENSION = 1;
         Option OMEGA_DIMENSION_OPTION = new Option("\tdimension of matrix omega\n", "D", 1,
-                                                   "-D <dimension of matrix omega>");
+                "-D <dimension of matrix omega>");
 
         double DEFAULT_LEARN_RATE_CHANGE = 0.01;
         Option LEARN_RATE_CHANGE_OPTION = new Option("\tthe amount the learning rate is changed\n", "L", 1,
-                                                     "-L <learning rate change>");
+                "-L <learning rate change>");
 
         /**
          * {@code true} iff GMLVQ shoud be executed in parallel.
          **/
         boolean DEFAULT_PARALLEL_EXECUTION = false;
         Option PARALLEL_EXECUTION_OPTION = new Option("\texecution in parallel\n", "X", 0,
-                                                      "enable parallel excecution");
+                "enable parallel excecution");
     }
 
     /**
@@ -153,51 +152,36 @@ public class GMLVQ extends AbstractClassifier
          */
         CostFunctionValue DEFAULT_COST_FUNCTION_TO_OPTIMIZE = CostFunctionValue.DEFAULT_COST;
         Option COST_FUNCTION_TO_OPTIMIZE_OPTION = new Option("\tcost function to optimize", "C", 1,
-                                                             "-C <cost function to optimize>");
-
-        /**
-         * the additional cost function that should be computed
-         **/
-        CostFunctionValue DEFAULT_ADDITIONAL_COST_FUNCTION = CostFunctionValue.NONE;
-        Option ADDITIONAL_COST_FUNCTION_OPTION = new Option("\tadditional cost function to compute", "A", 1,
-                                                            "-A <additional cost function>");
+                "-C <cost function to optimize>");
 
         /**
          * the beta parameter used within confusion dependent cost functions
          * (currently only F-measure)
          **/
         Option COST_FUNCTION_BETA_OPTION = new Option("\tparameter used for F-measure calculation", "B", 1,
-                                                      "-B <beta>");
+                "-B <beta>");
 
         /**
          * the weights used for confusion matrix based cost functions
          */
         Option COST_FUNCTION_WEIGHTS_OPTION = new Option("\tthe weights for confusion matrix based cost functions", "Y",
-                                                         1, "-Y <1st_class_weight,2nd_class_weight>");
+                1, "-Y <1st_class_weight,2nd_class_weight>");
+
+        /**
+         * additional classification functions
+         */
+        Option VISUALIZE_CLASSIFICATION_ERROR = new Option("visualize the classification error", "VC", 0, "visualize the classification error");
+        Option VISUALIZE_WEIGHTED_ACCURACY = new Option("visualize the weighted accuracy", "VA", 0, "visualize the classification error");
+        Option VISUALIZE_FMEASURE = new Option("visualize the f-measure", "VF", 0, "visualize the classification error");
+        Option VISUALIZE_PRECISION_RECALL = new Option("visualize precision recall", "VP", 0, "visualize the classification error");
+        Option VISUALIZE_DEFAULT_COST = new Option("visualize GMLVQ default cost function", "VD", 0, "visualize the classification error");
     }
 
     private static final long serialVersionUID = 1L;
 
-    public static boolean isRelevanceLearning(Matrix omegaMatrix) {
-        return omegaMatrix.getColumnDimension() != 1 && omegaMatrix.getRowDimension() != 1;
-    }
-
-    /**
-     * Main method for testing this class
-     *
-     * @param argv the commandline options
-     */
-    public static void main(String[] argv) {
-        runClassifier(new GMLVQ(), argv);
-    }
-
     private Builder builder;
 
-    private int seed;
-
     private GMLVQCore gmlvqInstance;
-
-    private transient VisualizationSingleton visualizationSingleton;
 
     public GMLVQ() {
         this.builder = new Builder();
@@ -242,25 +226,13 @@ public class GMLVQ extends AbstractClassifier
     }
 
     @Override
-    public double classifyInstance(Instance instance) throws Exception {
+    public double classifyInstance(Instance instance) {
         return this.gmlvqInstance.classifyInstance(WekaModelConverter.createDataPoint(instance));
     }
 
     @Override
-    public double[] distributionForInstance(Instance instance) throws Exception {
+    public double[] distributionForInstance(Instance instance) {
         return this.gmlvqInstance.distributionForInstance(WekaModelConverter.createDataPoint(instance));
-    }
-
-    /*
-     * Methods to apply changes to user controllable options as well as tip
-     * texts for the weka gui.
-     */
-
-
-    @Override
-    public Enumeration<String> enumerateMeasures() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
@@ -274,14 +246,14 @@ public class GMLVQ extends AbstractClassifier
         return result;
     }
 
-    public SelectedTag getCostFunctionToOptimize() {
+    public SelectedTag get_2_costFunctionToOptimize() {
         CostFunctionValue costFunctionToOptimize = this.builder.getCostFunctionToOptimize();
         SelectedTag selectedCostFunctionToOptimize = null;
 
         for (Tag tag : CostFunctionsSettings.AVAILIABLE_COST_FUNCTIONS) {
             if (tag.getID() == costFunctionToOptimize.ordinal()) {
                 selectedCostFunctionToOptimize = new SelectedTag(tag.getID(),
-                                                                 CostFunctionsSettings.AVAILIABLE_COST_FUNCTIONS);
+                        CostFunctionsSettings.AVAILIABLE_COST_FUNCTIONS);
             }
         }
 
@@ -289,22 +261,19 @@ public class GMLVQ extends AbstractClassifier
     }
 
     public SelectedTag getAdditionalCostFunction() {
-        // FIXME this only works for one cost function value
         CostFunctionValue additionalCostFunction = this.builder.getAdditionalCostFunctions().isEmpty()
-                                                   ? CostFunctionValue.NONE : this.builder.getAdditionalCostFunctions().get(0);
+                ? CostFunctionValue.NONE : this.builder.getAdditionalCostFunctions().get(0);
         SelectedTag selectedCostFunctionToOptimize = null;
-
         for (Tag tag : CostFunctionsSettings.AVAILIABLE_ADDITIONAL_COST_FUNCTIONS) {
             if (tag.getID() == additionalCostFunction.ordinal()) {
                 selectedCostFunctionToOptimize = new SelectedTag(tag.getID(),
-                                                                 CostFunctionsSettings.AVAILIABLE_ADDITIONAL_COST_FUNCTIONS);
+                        CostFunctionsSettings.AVAILIABLE_ADDITIONAL_COST_FUNCTIONS);
             }
         }
-
         return selectedCostFunctionToOptimize;
     }
 
-    public double getCostFunctionBeta() {
+    public double get_2_costFunctionBeta() {
         return this.builder.getCostFunctionBeta();
     }
 
@@ -312,37 +281,31 @@ public class GMLVQ extends AbstractClassifier
         return this.builder.getDataDimension();
     }
 
-    public double getDataPointRatioPerRound() {
+    public double get_2_dataPointRatioPerRound() {
         return this.builder.getDataPointRatioPerRound();
     }
 
-    public double getLearnRateChange() {
+    public double get_2_learnRateChange() {
         return this.builder.getLearnRateChange();
-    }
-
-    @Override
-    public double getMeasure(String measureName) {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     public int getNumberOfClasses() {
         return this.builder.getNumberOfClasses();
     }
 
-    public int getNumberOfEpochs() {
+    public int get_1_numberOfEpochs() {
         return this.builder.getNumberOfEpochs();
     }
 
-    public int getNumberOfPrototypesPerClass() {
+    public int get_1_numberOfPrototypesPerClass() {
         return this.builder.getNumberOfPrototypesPerClass();
     }
 
-    public int getOmegaDimension() {
+    public int get_2_omegaDimension() {
         return this.builder.getOmegaDimension();
     }
 
-    public double getOmegaLearningRate() {
+    public double get_2_omegaLearningRate() {
         return this.builder.getOmegaLearningRate();
     }
 
@@ -385,9 +348,8 @@ public class GMLVQ extends AbstractClassifier
         // cost function settings
         commandLine.add("-" + CostFunctionsSettings.COST_FUNCTION_TO_OPTIMIZE_OPTION.name());
         commandLine.add("" + this.builder.getCostFunctionToOptimize().ordinal());
-        commandLine.add("-" + CostFunctionsSettings.ADDITIONAL_COST_FUNCTION_OPTION.name());
-        commandLine.add("" + (this.builder.getAdditionalCostFunctions().isEmpty() ? CostFunctionValue.NONE.ordinal()
-                                                                                  : this.builder.getAdditionalCostFunctions().get(0).ordinal()));
+        // TODO add options
+
         commandLine.add("-" + CostFunctionsSettings.COST_FUNCTION_BETA_OPTION.name());
         commandLine.add("" + this.builder.getCostFunctionBeta());
         commandLine.add("-" + CostFunctionsSettings.COST_FUNCTION_WEIGHTS_OPTION.name());
@@ -398,7 +360,7 @@ public class GMLVQ extends AbstractClassifier
 
     }
 
-    public double getPrototypeLearningRate() {
+    public double get_2_prototypeLearningRate() {
         return this.builder.getPrototypeLearningRate();
     }
 
@@ -406,20 +368,15 @@ public class GMLVQ extends AbstractClassifier
         return this.builder.getPrototypesPerClass();
     }
 
-    @Override
-    public int getSeed() {
-        return this.seed;
-    }
-
-    public String getSigmoidSigmaInterval() {
+    public String get_2_sigmoidSigmaInterval() {
         return this.builder.getSigmoidSigmaInterval();
     }
 
-    public String getCostFunctionWeights() {
+    public String get_2_costFunctionWeights() {
         return this.builder.getCostFunctionWeights();
     }
 
-    public double getStopCriterion() {
+    public double get_2_stopCriterion() {
         return this.builder.getStopCriterion();
     }
 
@@ -439,19 +396,23 @@ public class GMLVQ extends AbstractClassifier
         return "An implementation of the GMLVQ and GLVQ algorithm.";
     }
 
-    public boolean isMatrixLearning() {
+    public boolean is_2_matrixLearning() {
         return this.builder.isMatrixLearning();
     }
 
-    public boolean isParallelExecution() {
+    public boolean is_2_parallelExecution() {
         return this.builder.isParallelExecution();
     }
 
-    public boolean isVisualization() {
+    public boolean is_1_visualization() {
         return this.builder.isVisualization();
     }
 
-    public String learnRateChangeTipText() {
+    public static boolean isRelevanceLearning(Matrix omegaMatrix) {
+        return omegaMatrix.getColumnDimension() != 1 && omegaMatrix.getRowDimension() != 1;
+    }
+
+    public String _2_learnRateChangeTipText() {
         return "the change of the learning rate";
     }
 
@@ -478,7 +439,9 @@ public class GMLVQ extends AbstractClassifier
 
         // cost function settings
         options.addElement(CostFunctionsSettings.COST_FUNCTION_TO_OPTIMIZE_OPTION);
-        options.addElement(CostFunctionsSettings.ADDITIONAL_COST_FUNCTION_OPTION);
+
+        // TODO add cost functions
+
         options.addElement(CostFunctionsSettings.COST_FUNCTION_BETA_OPTION);
         options.addElement(CostFunctionsSettings.COST_FUNCTION_WEIGHTS_OPTION);
 
@@ -488,31 +451,31 @@ public class GMLVQ extends AbstractClassifier
         return options.elements();
     }
 
-    public String matrixLearningTipText() {
+    public String _2_matrixLearningTipText() {
         return "if enabled a mapping matrix is adapted beside the prototypes";
     }
 
-    public String numberOfEpochsTipText() {
+    public String _1_numberOfEpochsTipText() {
         return "number of epochs/rounds to be performed for training";
     }
 
-    public String numberOfPrototypesPerClassTipText() {
+    public String _1_numberOfPrototypesPerClassTipText() {
         return "number of prototypes to be used to represent each class  (if only one number is given, each class gets this number of prototypes";
     }
 
-    public String omegaDimensionTipText() {
+    public String _2_omegaDimensionTipText() {
         return "explicit setting of the dimension of the mapping matrix, if set to 1 data dimension will be used";
     }
 
-    public String omegaLearningRateTipText() {
+    public String _2_omegaLearningRateTipText() {
         return "learning rate used for learning of the mapping matrix";
     }
 
-    public String parallelExecutionTipText() {
+    public String _2_parallelExecutionTipText() {
         return "determines whether the the classifier is build in parallel or not";
     }
 
-    public String prototypeLearningRateTipText() {
+    public String _2_prototypeLearningRateTipText() {
         return "learning rate used for prototype learning";
     }
 
@@ -520,15 +483,15 @@ public class GMLVQ extends AbstractClassifier
         return "choose a cost function that should be visualized in addition to the optimization function";
     }
 
-    public String costFunctionToOptimizeTipText() {
+    public String _1_costFunctionToOptimizeTipText() {
         return "choose what cost function is used to guide training";
     }
 
-    public String costFunctionBetaTipText() {
+    public String _2_costFunctionBetaTipText() {
         return "parameter of the F-measure";
     }
 
-    public String costFunctionWeightsTipText() {
+    public String _2_costFunctionWeightsTipText() {
         return "vector with weights of the importance of each class";
     }
 
@@ -536,54 +499,54 @@ public class GMLVQ extends AbstractClassifier
         return "seed to be used for the random number generator";
     }
 
-    public String sigmoidSigmaIntervalTipText() {
+    public String _2_sigmoidSigmaIntervalTipText() {
         return "interval of the parameter of the sigmoid/Fermit  function  which is part of the cost function";
     }
 
-    public String stopCriterionTipText() {
+    public String _2_stopCriterionTipText() {
         return "stop criterion: if learning ratio is smaller than this value, the learning is stopped";
     }
 
-    public String visualizationTipText() {
+    public String _1_visualizationTipText() {
         return "determines if the progress should be visualized";
     }
 
-    public String dataPointRatioPerRoundTipText() {
+    public String _2_dataPointRatioPerRoundTipText() {
         return "percentage of data which are used to perform one update step in one epoch";
     }
 
-    public void setDataPointRatioPerRound(double dataPointRatioPerRound) {
+    public void set_2_dataPointRatioPerRound(double dataPointRatioPerRound) {
         this.builder.dataPointRatioPerRound(dataPointRatioPerRound);
     }
 
-    public void setLearnRateChange(double learnRateChange) {
+    public void set_2_learnRateChange(double learnRateChange) {
         this.builder.learnRateChange(learnRateChange);
 
     }
 
-    public void setMatrixLearning(boolean matrixLearning) {
+    public void set_2_matrixLearning(boolean matrixLearning) {
         this.builder.matrixLearning(matrixLearning);
 
     }
 
-    public void setNumberOfEpochs(int numberOfEpochs) {
+    public void set_1_numberOfEpochs(int numberOfEpochs) {
         this.builder.numberOfEpochs(numberOfEpochs);
 
     }
 
-    public void setNumberOfPrototypesPerClass(int numberOfPrototypesPerClass) {
+    public void set_1_numberOfPrototypesPerClass(int numberOfPrototypesPerClass) {
         this.builder.numberOfPrototypesPerClass(numberOfPrototypesPerClass);
     }
 
-    public void setOmegaDimension(int omegaDimension) {
+    public void set_2_omegaDimension(int omegaDimension) {
         this.builder.omegaDimension(omegaDimension);
     }
 
-    public void setOmegaLearningRate(double omegaLearningRate) {
+    public void set_2_omegaLearningRate(double omegaLearningRate) {
         this.builder.omegaLearningRate(omegaLearningRate);
     }
 
-    public void setCostFunctionToOptimize(SelectedTag costFunctionToOptimizeTag) {
+    public void set_1_costFunctionToOptimize(SelectedTag costFunctionToOptimizeTag) {
         if (costFunctionToOptimizeTag.getTags() == CostFunctionsSettings.AVAILIABLE_COST_FUNCTIONS) {
             for (CostFunctionValue costFunctionValue : CostFunctionValue.values()) {
                 if (costFunctionValue.ordinal() == costFunctionToOptimizeTag.getSelectedTag().getID()) {
@@ -593,18 +556,27 @@ public class GMLVQ extends AbstractClassifier
         }
     }
 
+    public void set_1_costFunctionToOptimize(CostFunctionValue costFunctionValue) {
+        this.builder.costFunctionToOptimize(costFunctionValue);
+    }
+
     public void setAdditionalCostFunction(SelectedTag additionalCostFunctionTag) {
         if (additionalCostFunctionTag.getTags() == CostFunctionsSettings.AVAILIABLE_ADDITIONAL_COST_FUNCTIONS) {
             for (CostFunctionValue costFunctionValue : CostFunctionValue.values()) {
-                if (costFunctionValue.ordinal() == additionalCostFunctionTag.getSelectedTag().getID()
-                    && costFunctionValue != CostFunctionValue.NONE) {
-                    this.builder.addAdditionalCostFunction(costFunctionValue);
+                if (costFunctionValue.ordinal() == additionalCostFunctionTag.getSelectedTag().getID()) {
+                    addAdditionalCostFunction(costFunctionValue);
                 }
             }
         }
     }
 
-    public void setCostFunctionBeta(double costFunctionBeta) {
+    public void addAdditionalCostFunction(CostFunctionValue costFunctionValue) {
+        if (costFunctionValue != CostFunctionValue.NONE) {
+            this.builder.addAdditionalCostFunction(costFunctionValue);
+        }
+    }
+
+    public void set_2_costFunctionBeta(double costFunctionBeta) {
         this.builder.costFunctionBeta(costFunctionBeta);
     }
 
@@ -613,7 +585,7 @@ public class GMLVQ extends AbstractClassifier
 
         // algorithm settings
         String numberOfEpochsString = Utils.getOption(AlgorithmSettings.NUMBER_OF_EPOCHS_OPTION.name().charAt(0),
-                                                      options);
+                options);
         if (numberOfEpochsString.length() != 0) {
             this.builder.numberOfEpochs(Integer.parseInt(numberOfEpochsString));
         } else {
@@ -667,7 +639,7 @@ public class GMLVQ extends AbstractClassifier
         }
 
         String omegaLearningRateString = Utils.getOption(MethodSettings.OMEGA_LEARNING_RATE_OPTION.name().charAt(0),
-                                                         options);
+                options);
         if (omegaLearningRateString.length() != 0) {
             this.builder.omegaLearningRate(Double.parseDouble(omegaLearningRateString));
         } else {
@@ -684,7 +656,7 @@ public class GMLVQ extends AbstractClassifier
         }
 
         String learnRateChangeString = Utils.getOption(MethodSettings.LEARN_RATE_CHANGE_OPTION.name().charAt(0),
-                                                       options);
+                options);
         if (omegaDimensionString.length() != 0) {
             this.builder.learnRateChange(Double.parseDouble(learnRateChangeString));
         } else {
@@ -699,19 +671,13 @@ public class GMLVQ extends AbstractClassifier
                 .getOption(CostFunctionsSettings.COST_FUNCTION_TO_OPTIMIZE_OPTION.name().charAt(0), options);
         if (costFunctionToOptimizeString.length() != 0) {
             SelectedTag costFunctionToOptimizeTag = new SelectedTag(Integer.parseInt(costFunctionToOptimizeString),
-                                                                    CostFunctionsSettings.AVAILIABLE_COST_FUNCTIONS);
-            setCostFunctionToOptimize(costFunctionToOptimizeTag);
+                    CostFunctionsSettings.AVAILIABLE_COST_FUNCTIONS);
+            set_1_costFunctionToOptimize(costFunctionToOptimizeTag);
         } else {
             this.builder.costFunctionToOptimize(CostFunctionsSettings.DEFAULT_COST_FUNCTION_TO_OPTIMIZE);
         }
 
-        String additionalCostFunctionString = Utils
-                .getOption(CostFunctionsSettings.ADDITIONAL_COST_FUNCTION_OPTION.name().charAt(0), options);
-        if (additionalCostFunctionString.length() != 0) {
-            SelectedTag additionalCostFunctionTag = new SelectedTag(Integer.parseInt(additionalCostFunctionString),
-                                                                    CostFunctionsSettings.AVAILIABLE_ADDITIONAL_COST_FUNCTIONS);
-            setAdditionalCostFunction(additionalCostFunctionTag);
-        }
+        // TODO add additional cost functions
 
         String costFunctionBetaString = Utils
                 .getOption(CostFunctionsSettings.COST_FUNCTION_BETA_OPTION.name().charAt(0), options);
@@ -722,40 +688,33 @@ public class GMLVQ extends AbstractClassifier
         }
 
         super.setOptions(options);
-        // Utils.checkForRemainingOptions(options);
     }
 
-    public void setParallelExecution(boolean parallelExecution) {
+    public void set_2_ParallelExecution(boolean parallelExecution) {
         this.builder.parallelExecution(parallelExecution);
 
     }
 
-    public void setPrototypeLearningRate(double prototypeLearningRate) {
+    public void set_2_prototypeLearningRate(double prototypeLearningRate) {
         this.builder.prototypeLearningRate(prototypeLearningRate);
 
     }
 
-    @Override
-    public void setSeed(int seed) {
-        this.seed = seed;
-        this.builder.seed((long) this.seed);
-    }
-
-    public void setSigmoidSigmaInterval(String sigmoidSigmaIntervalString) {
+    public void set_2_sigmoidSigmaInterval(String sigmoidSigmaIntervalString) {
         this.builder.sigmoidSigmaInterval(sigmoidSigmaIntervalString);
 
     }
 
-    public void setCostFunctionWeights(String costFunctionWeightsString) {
+    public void set_2_costFunctionWeights(String costFunctionWeightsString) {
         this.builder.costFunctionWeights(costFunctionWeightsString);
     }
 
-    public void setStopCriterion(double stopCriterion) {
+    public void set_2_stopCriterion(double stopCriterion) {
         this.builder.stopCriterion(stopCriterion);
 
     }
 
-    public void setVisualization(boolean visualization) {
+    public void set_1_visualization(boolean visualization) {
         this.builder.visualization(visualization);
 
     }
@@ -772,7 +731,7 @@ public class GMLVQ extends AbstractClassifier
 
     @Override
     public void updateLambdaMatrix(Matrix lambdaMatrix) {
-        if (isMatrixLearning()) {
+        if (is_2_matrixLearning()) {
             VisualizationSingleton.getLastVisualizalizer().updateLambdaMatrix(lambdaMatrix);
         }
     }

@@ -1,16 +1,13 @@
 package weka.classifiers.functions.gmlvq.core.cost;
 
-import java.io.Serializable;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
 import weka.classifiers.functions.gmlvq.core.SigmoidFunction;
 import weka.classifiers.functions.gmlvq.model.DataPoint;
 import weka.classifiers.functions.gmlvq.model.OmegaMatrix;
 import weka.classifiers.functions.gmlvq.model.Prototype;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * A wrapping class for all {@link CostFunction}s to be calculated during
@@ -34,7 +31,7 @@ public class CostFunctionCalculator implements Serializable {
     private double costFunctionBeta;
     private double[] costFunctionWeights;
     public static final double DEFAULT_BETA = 2.0;
-    public static final double[] DEFAULT_WEIGHTS = new double[] { 1.0, 1.0 };
+    public static final double[] DEFAULT_WEIGHTS = new double[] { 0.5, 0.5 };
 
     public CostFunctionCalculator(SigmoidFunction sigmoidFunction, double costFunctionBeta,
             double[] costFunctionWeights, CostFunctionValue costFunctionValueToOptimize,
@@ -177,4 +174,17 @@ public class CostFunctionCalculator implements Serializable {
             throw new UnsupportedOperationException("no calculation method known for " + costFunctionValue.name());
         }
     }
+
+    public String defaultCostFunctionString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(costFunctionValueToOptimize.name());
+        if (costFunctionValueToOptimize.requiresBeta()) {
+            builder.append(" with beta ").append(costFunctionBeta);
+        }
+        if (costFunctionValueToOptimize.requiresWeightVector()) {
+            builder.append(" with weights ").append(Arrays.toString(costFunctionWeights));
+        }
+        return builder.toString();
+    }
+
 }
