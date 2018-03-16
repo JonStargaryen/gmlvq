@@ -31,7 +31,7 @@ public class GMLVQTest {
             gmlvq = new GMLVQ();
             gmlvq.set_2_matrixLearning(true);
             gmlvq.set_1_visualization(true);
-            gmlvq.set_1_costFunctionToOptimize(CostFunctionValue.DEFAULT_COST);
+            gmlvq.setCostFunctionToOptimize(CostFunctionValue.DEFAULT_COST);
             gmlvq.addAdditionalCostFunction(CostFunctionValue.PRECISION_RECALL);
             gmlvq.addAdditionalCostFunction(CostFunctionValue.FMEASURE);
 

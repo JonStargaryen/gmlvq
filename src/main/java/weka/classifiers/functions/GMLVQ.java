@@ -246,7 +246,7 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return result;
     }
 
-    public SelectedTag get_2_costFunctionToOptimize() {
+    public SelectedTag get_1_costFunctionToOptimize() {
         CostFunctionValue costFunctionToOptimize = this.builder.getCostFunctionToOptimize();
         SelectedTag selectedCostFunctionToOptimize = null;
 
@@ -556,7 +556,7 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         }
     }
 
-    public void set_1_costFunctionToOptimize(CostFunctionValue costFunctionValue) {
+    public void setCostFunctionToOptimize(CostFunctionValue costFunctionValue) {
         this.builder.costFunctionToOptimize(costFunctionValue);
     }
 
