@@ -348,7 +348,21 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         // cost function settings
         commandLine.add("-" + CostFunctionsSettings.COST_FUNCTION_TO_OPTIMIZE_OPTION.name());
         commandLine.add("" + this.builder.getCostFunctionToOptimize().ordinal());
-        // TODO add options
+        if (this.builder.isVisualizingClassificationError()) {
+            commandLine.add("-" + CostFunctionsSettings.VISUALIZE_CLASSIFICATION_ERROR.name());
+        }
+        if (this.builder.isVisualizingWeightedAccuracy()) {
+            commandLine.add("-" + CostFunctionsSettings.VISUALIZE_WEIGHTED_ACCURACY.name());
+        }
+        if (this.builder.isVisualizingFMeasure()) {
+            commandLine.add("-" + CostFunctionsSettings.VISUALIZE_FMEASURE.name());
+        }
+        if (this.builder.isVisualizingPrecisionRecall()) {
+            commandLine.add("-" + CostFunctionsSettings.VISUALIZE_PRECISION_RECALL.name());
+        }
+        if (this.builder.isVisualizingDefaultCost()) {
+            commandLine.add("-" + CostFunctionsSettings.VISUALIZE_DEFAULT_COST.name());
+        }
 
         commandLine.add("-" + CostFunctionsSettings.COST_FUNCTION_BETA_OPTION.name());
         commandLine.add("" + this.builder.getCostFunctionBeta());
@@ -408,6 +422,26 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return this.builder.isVisualization();
     }
 
+    public boolean is_3_visualizeClassificationError() {
+        return this.builder.isVisualizingClassificationError();
+    }
+
+    public boolean is_3_visualizeWeightedAccuracy() {
+        return this.builder.isVisualizingWeightedAccuracy();
+    }
+
+    public boolean is_3_visualizeFMeasure() {
+        return this.builder.isVisualizingFMeasure();
+    }
+
+    public boolean is_3_visualizePrecisionRecall() {
+        return this.builder.isVisualizingPrecisionRecall();
+    }
+
+    public boolean is_3_visualizeDefaultCost() {
+        return this.builder.isVisualizingDefaultCost();
+    }
+
     public static boolean isRelevanceLearning(Matrix omegaMatrix) {
         return omegaMatrix.getColumnDimension() != 1 && omegaMatrix.getRowDimension() != 1;
     }
@@ -439,8 +473,11 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
 
         // cost function settings
         options.addElement(CostFunctionsSettings.COST_FUNCTION_TO_OPTIMIZE_OPTION);
-
-        // TODO add cost functions
+        options.addElement(CostFunctionsSettings.VISUALIZE_CLASSIFICATION_ERROR);
+        options.addElement(CostFunctionsSettings.VISUALIZE_WEIGHTED_ACCURACY);
+        options.addElement(CostFunctionsSettings.VISUALIZE_FMEASURE);
+        options.addElement(CostFunctionsSettings.VISUALIZE_PRECISION_RECALL);
+        options.addElement(CostFunctionsSettings.VISUALIZE_DEFAULT_COST);
 
         options.addElement(CostFunctionsSettings.COST_FUNCTION_BETA_OPTION);
         options.addElement(CostFunctionsSettings.COST_FUNCTION_WEIGHTS_OPTION);
@@ -515,6 +552,26 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return "percentage of data which are used to perform one update step in one epoch";
     }
 
+    public String _3_visualizeClassificationErrorTipText() {
+        return "calculate and display classification error";
+    }
+
+    public String _3_visualizeWeightedAccuracyTipText() {
+        return "calculate and display weighted accuracy";
+    }
+
+    public String _3_visualizeFMeasureTipText() {
+        return "calculate and display f-measure";
+    }
+
+    public String _3_visualizePrecisionRecallTipText() {
+        return "calculate and display precision recall";
+    }
+
+    public String _3_visualizeDefaultCostTipText() {
+        return "calculate and display default cost";
+    }
+
     public void set_2_dataPointRatioPerRound(double dataPointRatioPerRound) {
         this.builder.dataPointRatioPerRound(dataPointRatioPerRound);
     }
@@ -544,6 +601,26 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
 
     public void set_2_omegaLearningRate(double omegaLearningRate) {
         this.builder.omegaLearningRate(omegaLearningRate);
+    }
+
+    public void set_3_visualizeClassificationError(boolean visualize) {
+        this.builder.visualizeClassificationError(visualize);
+    }
+
+    public void set_3_visualizeWeightedAccuracy(boolean visualize) {
+        this.builder.visualizeWeightedAccuracy(visualize);
+    }
+
+    public void set_3_visualizeFMeasure(boolean visualize) {
+        this.builder.visualizeFMeasure(visualize);
+    }
+
+    public void set_3_visualizePrecisionRecall(boolean visualize) {
+        this.builder.visualizePrecisionRecall(visualize);
+    }
+
+    public void set_3_visualizeDefaultCost(boolean visualize) {
+        this.builder.visualizeDefaultCost(visualize);
     }
 
     public void set_1_costFunctionToOptimize(SelectedTag costFunctionToOptimizeTag) {

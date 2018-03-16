@@ -706,6 +706,30 @@ public class GMLVQCore implements Serializable {
             return this.visualization;
         }
 
+        public boolean isVisualizingClassificationError() {
+            return isVisualizing(CostFunctionValue.CLASSIFICATION_ERROR);
+        }
+
+        public boolean isVisualizingWeightedAccuracy() {
+            return isVisualizing(CostFunctionValue.WEIGHTED_ACCURACY);
+        }
+
+        public boolean isVisualizingFMeasure() {
+            return isVisualizing(CostFunctionValue.FMEASURE);
+        }
+
+        public boolean isVisualizingPrecisionRecall() {
+            return isVisualizing(CostFunctionValue.PRECISION_RECALL);
+        }
+
+        public boolean isVisualizingDefaultCost() {
+            return isVisualizing(CostFunctionValue.DEFAULT_COST);
+        }
+
+        private boolean isVisualizing(CostFunctionValue function) {
+            return costFunctionToOptimize.equals(function) || additionalCostFunctions.contains(function);
+        }
+
         public long getSeed() {
             return this.seed;
         }
@@ -808,6 +832,41 @@ public class GMLVQCore implements Serializable {
         public Builder visualization(boolean visualization) {
             this.visualization = visualization;
             return this;
+        }
+
+        public Builder visualizeClassificationError(boolean visualize) {
+            visualizeFunction(visualize, CostFunctionValue.CLASSIFICATION_ERROR);
+            return this;
+        }
+
+        public Builder visualizeWeightedAccuracy(boolean visualize) {
+            visualizeFunction(visualize, CostFunctionValue.WEIGHTED_ACCURACY);
+            return this;
+        }
+
+        public Builder visualizeFMeasure(boolean visualize) {
+            visualizeFunction(visualize, CostFunctionValue.FMEASURE);
+            return this;
+        }
+
+        public Builder visualizePrecisionRecall(boolean visualize) {
+            visualizeFunction(visualize, CostFunctionValue.PRECISION_RECALL);
+            return this;
+        }
+
+        public Builder visualizeDefaultCost(boolean visualize) {
+            visualizeFunction(visualize, CostFunctionValue.DEFAULT_COST);
+            return this;
+        }
+
+        private void visualizeFunction(boolean visualize, CostFunctionValue function) {
+            if (visualize) {
+                if (!additionalCostFunctions.contains(function) && costFunctionToOptimize != function) {
+                    this.additionalCostFunctions.add(function);
+                }
+            } else {
+                additionalCostFunctions.remove(function);
+            }
         }
 
         public Builder seed(long seed) {
