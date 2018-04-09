@@ -133,7 +133,7 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         // declare cost functions to optimize
         Tag[] AVAILIABLE_COST_FUNCTIONS = new Tag[]{
                 new Tag(CostFunctionValue.DEFAULT_COST.ordinal(), "default cost function"),
-                new Tag(CostFunctionValue.CLASSIFICATION_ERROR.ordinal(), "classification error function"),
+                new Tag(CostFunctionValue.CLASSIFICATION_ACCURACY.ordinal(), "classification accuracy function"),
                 new Tag(CostFunctionValue.FMEASURE.ordinal(), "F-measure-based cost function"),
                 new Tag(CostFunctionValue.PRECISION_RECALL.ordinal(), "precision-recall cost function"),
                 new Tag(CostFunctionValue.WEIGHTED_ACCURACY.ordinal(), "weighted accuracy-based cost function")};
@@ -142,7 +142,7 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         Tag[] AVAILIABLE_ADDITIONAL_COST_FUNCTIONS = new Tag[]{
                 new Tag(CostFunctionValue.NONE.ordinal(), "no additional cost function"),
                 new Tag(CostFunctionValue.DEFAULT_COST.ordinal(), "default cost function"),
-                new Tag(CostFunctionValue.CLASSIFICATION_ERROR.ordinal(), "classification error function"),
+                new Tag(CostFunctionValue.CLASSIFICATION_ACCURACY.ordinal(), "classification accuracy function"),
                 new Tag(CostFunctionValue.FMEASURE.ordinal(), "F-measure-based cost function"),
                 new Tag(CostFunctionValue.PRECISION_RECALL.ordinal(), "precision-recall cost function"),
                 new Tag(CostFunctionValue.WEIGHTED_ACCURACY.ordinal(), "weighted accuracy-based cost function")};
@@ -170,11 +170,11 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         /**
          * additional classification functions
          */
-        Option VISUALIZE_CLASSIFICATION_ERROR = new Option("visualize the classification error", "VC", 0, "visualize the classification error");
-        Option VISUALIZE_WEIGHTED_ACCURACY = new Option("visualize the weighted accuracy", "VA", 0, "visualize the classification error");
-        Option VISUALIZE_FMEASURE = new Option("visualize the f-measure", "VF", 0, "visualize the classification error");
-        Option VISUALIZE_PRECISION_RECALL = new Option("visualize precision recall", "VP", 0, "visualize the classification error");
-        Option VISUALIZE_DEFAULT_COST = new Option("visualize GMLVQ default cost function", "VD", 0, "visualize the classification error");
+        Option VISUALIZE_CLASSIFICATION_ACCURACY = new Option("visualize the classification accuracy", "VC", 0, "visualize the classification accuracy");
+        Option VISUALIZE_WEIGHTED_ACCURACY = new Option("visualize the weighted accuracy", "VA", 0, "visualize the weighted accuracy");
+        Option VISUALIZE_FMEASURE = new Option("visualize the f-measure", "VF", 0, "visualize the f measure");
+        Option VISUALIZE_PRECISION_RECALL = new Option("visualize precision recall", "VP", 0, "visualize precicion precall ");
+        Option VISUALIZE_DEFAULT_COST = new Option("visualize GMLVQ default cost function", "VD", 0, "visualize the GMLVQ default cost function");
     }
 
     private static final long serialVersionUID = 1L;
@@ -260,19 +260,6 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return selectedCostFunctionToOptimize;
     }
 
-    public SelectedTag getAdditionalCostFunction() {
-        CostFunctionValue additionalCostFunction = this.builder.getAdditionalCostFunctions().isEmpty()
-                ? CostFunctionValue.NONE : this.builder.getAdditionalCostFunctions().get(0);
-        SelectedTag selectedCostFunctionToOptimize = null;
-        for (Tag tag : CostFunctionsSettings.AVAILIABLE_ADDITIONAL_COST_FUNCTIONS) {
-            if (tag.getID() == additionalCostFunction.ordinal()) {
-                selectedCostFunctionToOptimize = new SelectedTag(tag.getID(),
-                        CostFunctionsSettings.AVAILIABLE_ADDITIONAL_COST_FUNCTIONS);
-            }
-        }
-        return selectedCostFunctionToOptimize;
-    }
-
     public double get_2_costFunctionBeta() {
         return this.builder.getCostFunctionBeta();
     }
@@ -285,9 +272,9 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return this.builder.getDataPointRatioPerRound();
     }
 
-    public double get_2_learnRateChange() {
-        return this.builder.getLearnRateChange();
-    }
+//    public double get_2_learnRateChange() {
+//        return this.builder.getLearnRateChange();
+//    }
 
     public int getNumberOfClasses() {
         return this.builder.getNumberOfClasses();
@@ -319,11 +306,11 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         commandLine.add("" + this.builder.getNumberOfEpochs());
         commandLine.add("-" + AlgorithmSettings.NUMBER_OF_PROTOTYPES_OPTION.name());
         commandLine.add("" + this.builder.getNumberOfPrototypesPerClass());
-        commandLine.add("-" + AlgorithmSettings.STOP_CRITERION_OPTION.name());
-        commandLine.add("" + this.builder.getStopCriterion());
-        if (this.builder.isVisualization()) {
-            commandLine.add("-" + AlgorithmSettings.VISUALIZATION_OPTION.name());
-        }
+//        commandLine.add("-" + AlgorithmSettings.STOP_CRITERION_OPTION.name());
+//        commandLine.add("" + this.builder.getStopCriterion());
+//        if (this.builder.isVisualization()) {
+//            commandLine.add("-" + AlgorithmSettings.VISUALIZATION_OPTION.name());
+//        }
         commandLine.add("-" + AlgorithmSettings.DATA_POINTS_PER_ROUND_OPTION.name());
         commandLine.add("" + this.builder.getDataPointRatioPerRound());
         commandLine.add("-" + AlgorithmSettings.SIGMOID_SIGMA_INTERVAL_OPTION.name());
@@ -339,17 +326,17 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         if (this.builder.isMatrixLearning()) {
             commandLine.add("-" + MethodSettings.MATRIX_LEARNING_OPTION.name());
         }
-        commandLine.add("-" + MethodSettings.LEARN_RATE_CHANGE_OPTION.name());
-        commandLine.add("" + this.builder.getLearnRateChange());
-        if (this.builder.isParallelExecution()) {
-            commandLine.add("-" + MethodSettings.PARALLEL_EXECUTION_OPTION.name());
-        }
+//        commandLine.add("-" + MethodSettings.LEARN_RATE_CHANGE_OPTION.name());
+//        commandLine.add("" + this.builder.getLearnRateChange());
+//        if (this.builder.isParallelExecution()) {
+//            commandLine.add("-" + MethodSettings.PARALLEL_EXECUTION_OPTION.name());
+//        }
 
         // cost function settings
         commandLine.add("-" + CostFunctionsSettings.COST_FUNCTION_TO_OPTIMIZE_OPTION.name());
         commandLine.add("" + this.builder.getCostFunctionToOptimize().ordinal());
-        if (this.builder.isVisualizingClassificationError()) {
-            commandLine.add("-" + CostFunctionsSettings.VISUALIZE_CLASSIFICATION_ERROR.name());
+        if (this.builder.isVisualizingClassificationAccuracy()) {
+            commandLine.add("-" + CostFunctionsSettings.VISUALIZE_CLASSIFICATION_ACCURACY.name());
         }
         if (this.builder.isVisualizingWeightedAccuracy()) {
             commandLine.add("-" + CostFunctionsSettings.VISUALIZE_WEIGHTED_ACCURACY.name());
@@ -390,9 +377,9 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return this.builder.getCostFunctionWeights();
     }
 
-    public double get_2_stopCriterion() {
-        return this.builder.getStopCriterion();
-    }
+//    public double get_2_stopCriterion() {
+//        return this.builder.getStopCriterion();
+//    }
 
     @Override
     public TechnicalInformation getTechnicalInformation() {
@@ -422,8 +409,8 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return this.builder.isVisualization();
     }
 
-    public boolean is_3_visualizeClassificationError() {
-        return this.builder.isVisualizingClassificationError();
+    public boolean is_3_visualizeClassificationAccuracy() {
+        return this.builder.isVisualizingClassificationAccuracy();
     }
 
     public boolean is_3_visualizeWeightedAccuracy() {
@@ -446,9 +433,9 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return omegaMatrix.getColumnDimension() != 1 && omegaMatrix.getRowDimension() != 1;
     }
 
-    public String _2_learnRateChangeTipText() {
-        return "the change of the learning rate";
-    }
+//    public String _2_learnRateChangeTipText() {
+//        return "the change of the learning rate";
+//    }
 
     @Override
     public Enumeration<Option> listOptions() {
@@ -458,7 +445,7 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         // algorithm settings
         options.addElement(AlgorithmSettings.NUMBER_OF_EPOCHS_OPTION);
         options.addElement(AlgorithmSettings.NUMBER_OF_PROTOTYPES_OPTION);
-        options.addElement(AlgorithmSettings.STOP_CRITERION_OPTION);
+//        options.addElement(AlgorithmSettings.STOP_CRITERION_OPTION);
         options.addElement(AlgorithmSettings.VISUALIZATION_OPTION);
         options.addElement(AlgorithmSettings.DATA_POINTS_PER_ROUND_OPTION);
         options.addElement(AlgorithmSettings.SIGMOID_SIGMA_INTERVAL_OPTION);
@@ -473,7 +460,7 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
 
         // cost function settings
         options.addElement(CostFunctionsSettings.COST_FUNCTION_TO_OPTIMIZE_OPTION);
-        options.addElement(CostFunctionsSettings.VISUALIZE_CLASSIFICATION_ERROR);
+        options.addElement(CostFunctionsSettings.VISUALIZE_CLASSIFICATION_ACCURACY);
         options.addElement(CostFunctionsSettings.VISUALIZE_WEIGHTED_ACCURACY);
         options.addElement(CostFunctionsSettings.VISUALIZE_FMEASURE);
         options.addElement(CostFunctionsSettings.VISUALIZE_PRECISION_RECALL);
@@ -516,10 +503,6 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return "learning rate used for prototype learning";
     }
 
-    public String additionalCostFunctionTipText() {
-        return "choose a cost function that should be visualized in addition to the optimization function";
-    }
-
     public String _1_costFunctionToOptimizeTipText() {
         return "choose what cost function is used to guide training";
     }
@@ -540,9 +523,9 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return "interval of the parameter of the sigmoid/Fermit  function  which is part of the cost function";
     }
 
-    public String _2_stopCriterionTipText() {
-        return "stop criterion: if learning ratio is smaller than this value, the learning is stopped";
-    }
+//    public String _2_stopCriterionTipText() {
+//        return "stop criterion: if learning ratio is smaller than this value, the learning is stopped";
+//    }
 
     public String _1_visualizationTipText() {
         return "determines if the progress should be visualized";
@@ -552,8 +535,8 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         return "percentage of data which are used to perform one update step in one epoch";
     }
 
-    public String _3_visualizeClassificationErrorTipText() {
-        return "calculate and display classification error";
+    public String _3_visualizeClassificationAccuracyTipText() {
+        return "calculate and display classification accuracy";
     }
 
     public String _3_visualizeWeightedAccuracyTipText() {
@@ -576,10 +559,9 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         this.builder.dataPointRatioPerRound(dataPointRatioPerRound);
     }
 
-    public void set_2_learnRateChange(double learnRateChange) {
-        this.builder.learnRateChange(learnRateChange);
-
-    }
+//    public void set_2_learnRateChange(double learnRateChange) {
+//        this.builder.learnRateChange(learnRateChange);
+//    }
 
     public void set_2_matrixLearning(boolean matrixLearning) {
         this.builder.matrixLearning(matrixLearning);
@@ -603,8 +585,8 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         this.builder.omegaLearningRate(omegaLearningRate);
     }
 
-    public void set_3_visualizeClassificationError(boolean visualize) {
-        this.builder.visualizeClassificationError(visualize);
+    public void set_3_visualizeClassificationAccuracy(boolean visualize) {
+        this.builder.visualizeClassificationAccuracy(visualize);
     }
 
     public void set_3_visualizeWeightedAccuracy(boolean visualize) {
@@ -637,16 +619,6 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         this.builder.costFunctionToOptimize(costFunctionValue);
     }
 
-    public void setAdditionalCostFunction(SelectedTag additionalCostFunctionTag) {
-        if (additionalCostFunctionTag.getTags() == CostFunctionsSettings.AVAILIABLE_ADDITIONAL_COST_FUNCTIONS) {
-            for (CostFunctionValue costFunctionValue : CostFunctionValue.values()) {
-                if (costFunctionValue.ordinal() == additionalCostFunctionTag.getSelectedTag().getID()) {
-                    addAdditionalCostFunction(costFunctionValue);
-                }
-            }
-        }
-    }
-
     public void addAdditionalCostFunction(CostFunctionValue costFunctionValue) {
         if (costFunctionValue != CostFunctionValue.NONE) {
             this.builder.addAdditionalCostFunction(costFunctionValue);
@@ -677,12 +649,12 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
             this.builder.numberOfPrototypesPerClass(AlgorithmSettings.DEFAULT_NUMBER_OF_PROTOTYPES_PER_CLASS);
         }
 
-        String stopCriterionString = Utils.getOption(AlgorithmSettings.STOP_CRITERION_OPTION.name().charAt(0), options);
-        if (stopCriterionString.length() != 0) {
-            this.builder.stopCriterion(Double.parseDouble(stopCriterionString));
-        } else {
-            this.builder.stopCriterion(AlgorithmSettings.DEFAULT_STOP_CRITERION);
-        }
+//        String stopCriterionString = Utils.getOption(AlgorithmSettings.STOP_CRITERION_OPTION.name().charAt(0), options);
+//        if (stopCriterionString.length() != 0) {
+//            this.builder.stopCriterion(Double.parseDouble(stopCriterionString));
+//        } else {
+//            this.builder.stopCriterion(AlgorithmSettings.DEFAULT_STOP_CRITERION);
+//        }
 
         this.builder.visualization(Utils.getFlag(AlgorithmSettings.VISUALIZATION_OPTION.name().charAt(0), options));
 
@@ -732,13 +704,13 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
             this.builder.omegaDimension(MethodSettings.DEFAULT_OMEGA_DIMENSION);
         }
 
-        String learnRateChangeString = Utils.getOption(MethodSettings.LEARN_RATE_CHANGE_OPTION.name().charAt(0),
-                options);
-        if (omegaDimensionString.length() != 0) {
-            this.builder.learnRateChange(Double.parseDouble(learnRateChangeString));
-        } else {
-            this.builder.learnRateChange(MethodSettings.DEFAULT_OMEGA_DIMENSION);
-        }
+//        String learnRateChangeString = Utils.getOption(MethodSettings.LEARN_RATE_CHANGE_OPTION.name().charAt(0),
+//                options);
+//        if (omegaDimensionString.length() != 0) {
+//            this.builder.learnRateChange(Double.parseDouble(learnRateChangeString));
+//        } else {
+//            this.builder.learnRateChange(MethodSettings.DEFAULT_OMEGA_DIMENSION);
+//        }
 
         this.builder
                 .parallelExecution(Utils.getFlag(MethodSettings.PARALLEL_EXECUTION_OPTION.name().charAt(0), options));
@@ -753,8 +725,6 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         } else {
             this.builder.costFunctionToOptimize(CostFunctionsSettings.DEFAULT_COST_FUNCTION_TO_OPTIMIZE);
         }
-
-        // TODO add additional cost functions
 
         String costFunctionBetaString = Utils
                 .getOption(CostFunctionsSettings.COST_FUNCTION_BETA_OPTION.name().charAt(0), options);
@@ -786,10 +756,10 @@ public class GMLVQ extends AbstractClassifier implements TechnicalInformationHan
         this.builder.costFunctionWeights(costFunctionWeightsString);
     }
 
-    public void set_2_stopCriterion(double stopCriterion) {
-        this.builder.stopCriterion(stopCriterion);
-
-    }
+//    public void set_2_stopCriterion(double stopCriterion) {
+//        this.builder.stopCriterion(stopCriterion);
+//
+//    }
 
     public void set_1_visualization(boolean visualization) {
         this.builder.visualization(visualization);

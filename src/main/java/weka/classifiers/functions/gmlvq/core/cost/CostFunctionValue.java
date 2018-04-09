@@ -16,7 +16,7 @@ public enum CostFunctionValue {
     FMEASURE(true, true, false),
     PRECISION_RECALL(true, false, true),
     DEFAULT_COST(false, false, false),
-    CLASSIFICATION_ERROR(false, false, false);
+    CLASSIFICATION_ACCURACY(false, false, false);
 
     private boolean requiresConfusionMatrix;
     private boolean requiresBeta;

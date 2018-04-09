@@ -79,7 +79,7 @@ public class CostFunctionCalculator implements Serializable {
             return;
         }
         switch (costFunctionValue) {
-        case CLASSIFICATION_ERROR:
+        case CLASSIFICATION_ACCURACY:
             this.persistentCostFunctions.put(costFunctionValue, new ClassificationErrorFunction(this.sigmoidFunction));
             break;
         case DEFAULT_COST:
@@ -167,8 +167,8 @@ public class CostFunctionCalculator implements Serializable {
             // TODO: is this really the best place to 'invert'???
             return 1 - this.persistentCostFunctions.get(CostFunctionValue.DEFAULT_COST).evaluate(chosenDataPoints,
                     prototypes, omegaMatrix);
-        case CLASSIFICATION_ERROR:
-            return 1 - this.persistentCostFunctions.get(CostFunctionValue.CLASSIFICATION_ERROR)
+        case CLASSIFICATION_ACCURACY:
+            return 1 - this.persistentCostFunctions.get(CostFunctionValue.CLASSIFICATION_ACCURACY)
                     .evaluate(chosenDataPoints, prototypes, omegaMatrix);
         default:
             throw new UnsupportedOperationException("no calculation method known for " + costFunctionValue.name());
@@ -187,4 +187,11 @@ public class CostFunctionCalculator implements Serializable {
         return builder.toString();
     }
 
+    public double getCostFunctionBeta() {
+        return costFunctionBeta;
+    }
+
+    public double[] getCostFunctionWeights() {
+        return costFunctionWeights;
+    }
 }

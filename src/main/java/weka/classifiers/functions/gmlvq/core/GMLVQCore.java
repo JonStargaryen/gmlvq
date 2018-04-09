@@ -187,6 +187,8 @@ public class GMLVQCore implements Serializable {
     private ClassificationErrorFunction classificationErrorFunction;
     private UpdateManager updateManager;
     private GradientDescent gradientDescent;
+    private final List<CostFunctionValue> additionalCostFunctions;
+
 
     private GMLVQCore(Builder builder) throws InterruptedException, ExecutionException {
         this.dataPoints = builder.dataPoints;
@@ -194,7 +196,7 @@ public class GMLVQCore implements Serializable {
         this.numberOfPrototypesPerClass = builder.numberOfPrototypesPerClass;
         this.prototypesPerClass = builder.prototypesPerClass;
         this.omegaDimension = builder.omegaDimension;
-
+        this.additionalCostFunctions = builder.additionalCostFunctions;
         this.learnRateChange = builder.learnRateChange;
         this.prototypeLearningRate = builder.prototypeLearningRate;
         this.omegaLearningRate = builder.omegaLearningRate;
@@ -559,7 +561,7 @@ public class GMLVQCore implements Serializable {
         /**
          * the default number of epochs used for training
          */
-        int DEFAULT_NUMBER_OF_EPOCHS = 2000;
+        int DEFAULT_NUMBER_OF_EPOCHS = 500;
         /**
          * the default number of prototypes used to represent each class
          */
@@ -581,7 +583,7 @@ public class GMLVQCore implements Serializable {
         /**
          * the default percentage of trainingData points used per round
          */
-        double DEFAULT_DATA_POINT_RATIO_PER_ROUND = 0.1;
+        double DEFAULT_DATA_POINT_RATIO_PER_ROUND = 0.75;
         /**
          * the default learning rate of the omega matrix
          */
@@ -610,7 +612,7 @@ public class GMLVQCore implements Serializable {
          */
         boolean DEFAULT_VISUALIZATION = true;
         CostFunctionValue DEFAULT_COST_FUNCTION = CostFunctionValue.DEFAULT_COST;
-        CostFunctionValue DEFAULT_ADDITIONAL_COST_FUNCTION = CostFunctionValue.CLASSIFICATION_ERROR;
+
     }
 
     public static class Builder implements Serializable {
@@ -706,8 +708,8 @@ public class GMLVQCore implements Serializable {
             return this.visualization;
         }
 
-        public boolean isVisualizingClassificationError() {
-            return isVisualizing(CostFunctionValue.CLASSIFICATION_ERROR);
+        public boolean isVisualizingClassificationAccuracy() {
+            return isVisualizing(CostFunctionValue.CLASSIFICATION_ACCURACY);
         }
 
         public boolean isVisualizingWeightedAccuracy() {
@@ -834,8 +836,8 @@ public class GMLVQCore implements Serializable {
             return this;
         }
 
-        public Builder visualizeClassificationError(boolean visualize) {
-            visualizeFunction(visualize, CostFunctionValue.CLASSIFICATION_ERROR);
+        public Builder visualizeClassificationAccuracy(boolean visualize) {
+            visualizeFunction(visualize, CostFunctionValue.CLASSIFICATION_ACCURACY);
             return this;
         }
 
@@ -1030,7 +1032,7 @@ public class GMLVQCore implements Serializable {
                     numberOfPrototypes += prototypes;
                 }
                 final int finalNumberOfPrototypes = numberOfPrototypes;
-                final Map<CostFunctionValue, Double> costFunctions = new HashMap<CostFunctionValue, Double>();
+                final Map<CostFunctionValue, Double> costFunctions = new HashMap<>();
                 costFunctions.put(this.costFunctionToOptimize, null);
                 for (CostFunctionValue value : this.additionalCostFunctions) {
                     costFunctions.put(value, null);
@@ -1056,25 +1058,35 @@ public class GMLVQCore implements Serializable {
 
     public String getDetailString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Data used for learning process:").append(System.lineSeparator());
         appendParameter(sb, "number of data points", dataPoints.size());
         appendParameter(sb, "number of features", dataDimension);
         appendParameter(sb, "number of classes", numberOfClasses);
-        appendParameter(sb, "ratio of data points learned per epoch", dataPointRatioPerRound);
-        appendParameter(sb, "number of prototypes per class", numberOfPrototypesPerClass);
+
+        sb.append("Parameters used for this run:").append(System.lineSeparator());
+        appendParameter(sb, "number of epochs", numberOfTotalEpochs);
+        appendParameter(sb, "number of prototypes", numberOfPrototypesPerClass);
+        appendParameter(sb, "data points per round", dataPointRatioPerRound);
+        appendParameter(sb, "sigmoid sigma interval", "["+sigmoidSigmaIntervalStart+", "+sigmoidSigmaIntervalEnd+"]");
+        appendParameter(sb, "prototype learning rate", prototypeLearningRate);
         appendParameter(sb, "initial learning rate", learnRateChange);
-        appendParameter(sb, "initial prototype learning rate change", prototypeLearningRate);
-        appendParameter(sb, "sigmoid function interval start", sigmoidSigmaIntervalStart);
-        appendParameter(sb, "sigmoid function interval end", sigmoidSigmaIntervalEnd);
         appendParameter(sb, "matrix learning", matrixLearning);
-        appendParameter(sb, "optimized cost function", costFunctionCalculator.defaultCostFunctionString());
         if (matrixLearning) {
-            appendParameter(sb, "omega matrix dimension", omegaDimension);
-            appendParameter(sb, "initial omega matrix learning rate change", omegaLearningRate);
+            appendParameter(sb, "omega learning rate", omegaLearningRate);
+            appendParameter(sb, "omega dimension", omegaDimension);
         }
+
+        appendParameter(sb, "cost function to optimize", costFunctionCalculator.defaultCostFunctionString());
+        appendParameter(sb, "visualize classification accuracy", additionalCostFunctions.contains(CostFunctionValue.CLASSIFICATION_ACCURACY));
+        appendParameter(sb, "visualize weighted accuracy", additionalCostFunctions.contains(CostFunctionValue.WEIGHTED_ACCURACY));
+        appendParameter(sb, "visualize f measure", additionalCostFunctions.contains(CostFunctionValue.FMEASURE));
+        appendParameter(sb, "visualize precision recall", additionalCostFunctions.contains(CostFunctionValue.PRECISION_RECALL));
+        appendParameter(sb, "visualize default cost", additionalCostFunctions.contains(CostFunctionValue.DEFAULT_COST));
+        appendParameter(sb, "cost function beta", costFunctionCalculator.getCostFunctionBeta());
+        appendParameter(sb, "cost function weights", Arrays.toString(costFunctionCalculator.getCostFunctionWeights()));
+
         appendParameter(sb, "parallel execution", parallelExecution);
-        appendParameter(sb, "visualization", visualization);
-        appendParameter(sb, "termination - epochs above", numberOfTotalEpochs);
-        appendParameter(sb, "termination - rate change below", stopCriterion);
+
         return sb.toString();
     }
 
