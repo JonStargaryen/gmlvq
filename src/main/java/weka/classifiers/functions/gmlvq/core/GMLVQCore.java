@@ -200,7 +200,7 @@ public class GMLVQCore implements Serializable {
         this.learnRateChange = builder.learnRateChange;
         this.prototypeLearningRate = builder.prototypeLearningRate;
         this.omegaLearningRate = builder.omegaLearningRate;
-        this.dataPointRatioPerRound = builder.dataPointRationPerRound;
+        this.dataPointRatioPerRound = builder.dataPointRatioPerRound;
         this.sigmoidSigmaIntervalStart = builder.sigmoidSigmaIntervalStart;
         this.sigmoidSigmaIntervalEnd = builder.sigmoidSigmaIntervalEnd;
         this.stopCriterion = builder.stopCriterion;
@@ -628,7 +628,7 @@ public class GMLVQCore implements Serializable {
         private int omegaDimension = GMLVQCore.DefaultSettings.DEFAULT_OMEGA_DIMENSION;
 
         private double learnRateChange = GMLVQCore.DefaultSettings.DEFAULT_LEARN_RATE_CHANGE;
-        private double dataPointRationPerRound = GMLVQCore.DefaultSettings.DEFAULT_DATA_POINT_RATIO_PER_ROUND;
+        private double dataPointRatioPerRound = GMLVQCore.DefaultSettings.DEFAULT_DATA_POINT_RATIO_PER_ROUND;
         private double omegaLearningRate = GMLVQCore.DefaultSettings.DEFAULT_OMEGA_LEARNING_RATE;
         private double prototypeLearningRate = GMLVQCore.DefaultSettings.DEFAULT_PROTOYPE_LEARNING_RATE;
         private double sigmoidSigmaIntervalStart = GMLVQCore.DefaultSettings.DEFAULT_SIGMOID_SIGMA_INTERVAL_START;
@@ -669,7 +669,7 @@ public class GMLVQCore implements Serializable {
         }
 
         public double getDataPointRatioPerRound() {
-            return this.dataPointRationPerRound;
+            return this.dataPointRatioPerRound;
         }
 
         public double getOmegaLearningRate() {
@@ -785,7 +785,7 @@ public class GMLVQCore implements Serializable {
         }
 
         public Builder dataPointRatioPerRound(double dataPointRationPerRound) {
-            this.dataPointRationPerRound = dataPointRationPerRound;
+            this.dataPointRatioPerRound = dataPointRationPerRound;
             return this;
         }
 
@@ -917,6 +917,10 @@ public class GMLVQCore implements Serializable {
             }
             if (dataPoints.size() < 2) {
                 throw new IllegalArgumentException("number of data points cannot be smaller than 2");
+            }
+            int ppr = (int)(dataPoints.size() * dataPointRatioPerRound);
+            if (ppr < 10.0) {
+                throw new IllegalStateException("number of data points evaluated per epoch would be "+ppr+", the minimal number of data points per round allowed is 10.");
             }
             this.dataPoints = dataPoints;
 
@@ -1066,8 +1070,8 @@ public class GMLVQCore implements Serializable {
         sb.append("Parameters used for this run:").append(System.lineSeparator());
         appendParameter(sb, "number of epochs", numberOfTotalEpochs);
         appendParameter(sb, "number of prototypes", numberOfPrototypesPerClass);
-        appendParameter(sb, "data points per round", dataPointRatioPerRound);
-        appendParameter(sb, "sigmoid sigma interval", "["+sigmoidSigmaIntervalStart+", "+sigmoidSigmaIntervalEnd+"]");
+        appendParameter(sb, "data point ratio per round", dataPointRatioPerRound);
+        appendParameter(sb, "sigmoid sigma interval", "[" + sigmoidSigmaIntervalStart + ", " + sigmoidSigmaIntervalEnd + "]");
         appendParameter(sb, "prototype learning rate", prototypeLearningRate);
         appendParameter(sb, "initial learning rate", learnRateChange);
         appendParameter(sb, "matrix learning", matrixLearning);

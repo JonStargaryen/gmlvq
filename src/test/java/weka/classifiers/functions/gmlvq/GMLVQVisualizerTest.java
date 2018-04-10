@@ -19,7 +19,7 @@ public class GMLVQVisualizerTest {
 
     @Before
     public void setup() throws Exception {
-        instances = TestUtils.loadDataset(TestUtils.Datasets.IRIS_2_CLASSES);
+        instances = TestUtils.loadDataset(TestUtils.Datasets.TECATOR_D);
         dataPoints = WekaModelConverter.createDataPoints(instances);
         gmlvq = new GMLVQCore.Builder().numberOfEpochs(1000)
                                        .numberOfPrototypesPerClass(4)

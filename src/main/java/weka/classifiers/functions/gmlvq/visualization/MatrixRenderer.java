@@ -90,7 +90,7 @@ public class MatrixRenderer implements Serializable {
 
     private void initialize() {
         // initialize the color scale
-        double[] minAndMaxValues = LinearAlgebraicCalculations.getMinAndMaxValuesFromMatrix(this.lambdaMatrix.copy());
+        double[] minAndMaxValues = LinearAlgebraicCalculations.getMinAndMaxValuesFromMatrix(this.lambdaMatrix/*.copy()*/);
         float minValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MINIMAL_INDEX];
         float maxValue = (float) minAndMaxValues[LinearAlgebraicCalculations.MAXIMAL_INDEX];
         this.colorScale = new ColorScale.Builder(minValue, maxValue).build();
@@ -119,7 +119,7 @@ public class MatrixRenderer implements Serializable {
 
     public void draw(Graphics2D graphics, Matrix lambdaMatrix) {
         this.lambdaMatrix = lambdaMatrix;
-        this.redraw(graphics);
+        redraw(graphics);
     }
 
     public void redraw(Graphics2D graphics) {

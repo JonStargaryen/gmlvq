@@ -1,6 +1,6 @@
 package weka.classifiers.functions.gmlvq.visualization;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.Serializable;
 
 /**
@@ -8,7 +8,6 @@ import java.io.Serializable;
  * values.
  *
  * @author Christoph Leberecht
- *
  */
 public class ColorScale implements Serializable {
 
@@ -130,6 +129,12 @@ public class ColorScale implements Serializable {
      * @return
      */
     public Color getColor(float value) {
+        // cap values, there may be problems mit double/float casting inconsistencies
+        if (value > maximalValue) {
+            value = maximalValue;
+        } else if (value < minimalValue) {
+            value = minimalValue;
+        }
         final float requestedHue = (value - this.getMinimalValue()) * this.scalingFactor + this.minimalHue;
         return Color.getHSBColor(requestedHue, this.saturation, this.brightness);
     }
