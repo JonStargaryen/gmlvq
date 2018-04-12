@@ -11,6 +11,10 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +86,7 @@ public class Visualizer extends JTabbedPane {
         this.panelLambdaMatrix.getRenderer().setShowScale(this.checkBoxShowScale.isSelected());
     }
 
-    public void saveLamdaMatrixToSVG() {
+    public void saveLambdaMatrixToSVG() {
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("scalable vector graphics", "svg"));
@@ -92,8 +96,8 @@ public class Visualizer extends JTabbedPane {
             File file = fileChooser.getSelectedFile();
             if (file != null && file.exists()) {
                 int response = JOptionPane.showConfirmDialog(null,
-                        "The file already exists. Do you want to replace the existing file?", "Overwrite file",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                                                             "The file already exists. Do you want to replace the existing file?", "Overwrite file",
+                                                             JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (response != JOptionPane.YES_OPTION) {
                     return;
                 }
@@ -101,10 +105,6 @@ public class Visualizer extends JTabbedPane {
             // request export
             this.panelLambdaMatrix.exportLambdaMatrixToSVG(file);
         }
-    }
-
-    public FeatureAnalysisPanel getFeatureAnalysisPanel() {
-        return this.panelFeatureAnalysis;
     }
 
     public void updatePrototypes(List<Prototype> prototypes) {
@@ -124,6 +124,20 @@ public class Visualizer extends JTabbedPane {
         this.panelLambdaMatrix.repaint();
         this.panelFeatureInfluence.setLambdaMatrix(lambdaMatrix);
         this.panelFeatureInfluence.repaint();
+
+        try {
+            // write lambda matrix learning progress to SVG on update event
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            File tempFile = Files.createTempFile(formatter.format(now) + "_", "_gmlvq_lambda_matrix.svg").toFile();
+            this.panelLambdaMatrix.exportLambdaMatrixToSVG(tempFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public FeatureAnalysisPanel getFeatureAnalysisPanel() {
+        return this.panelFeatureAnalysis;
     }
 
 }

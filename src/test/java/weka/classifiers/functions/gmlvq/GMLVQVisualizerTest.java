@@ -9,6 +9,7 @@ import weka.core.Instances;
 
 import java.util.List;
 
+@Deprecated
 public class GMLVQVisualizerTest {
 
     // private List<DataPoint> dataPoints;
