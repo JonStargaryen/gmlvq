@@ -1,24 +1,15 @@
 package weka.classifiers.functions.gmlvq.core;
 
-import static weka.classifiers.functions.GMLVQ.isRelevanceLearning;
-import static weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations.add;
-import static weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations.dyadicProduct;
-import static weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations.multiply;
-import static weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations.scaledTranslate;
-import static weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations.substract;
+import weka.classifiers.functions.gmlvq.core.cost.CostFunctionCalculator;
+import weka.classifiers.functions.gmlvq.model.*;
+import weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations;
+import weka.core.matrix.Matrix;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import weka.classifiers.functions.gmlvq.core.cost.CostFunctionCalculator;
-import weka.classifiers.functions.gmlvq.model.DataPoint;
-import weka.classifiers.functions.gmlvq.model.EmbeddedSpaceVector;
-import weka.classifiers.functions.gmlvq.model.OmegaMatrix;
-import weka.classifiers.functions.gmlvq.model.Prototype;
-import weka.classifiers.functions.gmlvq.model.Vector;
-import weka.classifiers.functions.gmlvq.model.WinningInformation;
-import weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations;
-import weka.core.matrix.Matrix;
+import static weka.classifiers.functions.GMLVQ.isRelevanceLearning;
+import static weka.classifiers.functions.gmlvq.utilities.LinearAlgebraicCalculations.*;
 
 /**
  * Each stochastic gradient descent composes a update which consists of updated
@@ -188,8 +179,8 @@ public class ProposedUpdate {
         Vector deltaWPlus;
         Vector deltaWMinus;
         if (this.relevanceLearning) {
-            deltaWPlus = multiply(multiply(differenceSameClass, this.scaledTransposedOmegaMatrix), psiPlus);
-            deltaWMinus = multiply(multiply(differenceOtherClass, this.scaledTransposedOmegaMatrix), psiMinus);
+            deltaWPlus = multiply(multiply(differenceSameClass, this.scaledTransposedOmegaMatrix), -2.0 * psiPlus);
+            deltaWMinus = multiply(multiply(differenceOtherClass, this.scaledTransposedOmegaMatrix), -2.0 * psiMinus);
         } else {
             deltaWPlus = multiply(differenceSameClass, -2.0 * psiPlus);
             deltaWMinus = multiply(differenceOtherClass, -2.0 * psiMinus);
