@@ -20,7 +20,7 @@ public class VisualizerMouseAdapter extends MouseAdapter {
         if (componentName.equals("SHOW_SCALE")) {
             this.parent.switchScale();
         } else if (componentName.equals("EXPORT_LAMBDA_MATRIX")) {
-            this.parent.saveLamdaMatrixToSVG();
+            this.parent.saveLambdaMatrixToSVG();
         } else if (componentName.equals("CLASS_HIDE_ALL")) {
             this.parent.getFeatureAnalysisPanel().moveAll(
                     this.parent.getFeatureAnalysisPanel().getListModelShowByClass(),
