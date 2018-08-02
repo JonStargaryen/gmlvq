@@ -4,7 +4,20 @@ A Java implementation of the generalized matrix learning vector quantization, a 
 supervised learning technique.
 
 The project is a plug-in for the [weka machine learning framework](http://www.cs.waikato.ac.nz/ml/weka/).
-Import the distribution `dist/gmlvq.zip` using the weka's PackageManager.
+
+## Quick start
+
+Using the weka package manager:
+
+- download the [leatest WEKA version](https://www.cs.waikato.ac.nz/ml/weka/downloading.html)
+- download the GMLVQ package
+- install and run the weka gui
+- choose `Tools` - `Package manager`
+- in the new window, click the `File/URL` button and locate the packaged GMLVQ downloaded before
+- restart WEKA
+
+To run an analysis with GMLVQ go to the `Explorer`, choose your data and after selecting the `Classify` tab you
+are able to `choose` GMLVQ located in the `functions` folder.
 
 ## Implementation Details
 
@@ -43,15 +56,7 @@ input data which contribute the most to the training process. This is realized b
 (defined as `lambda = omega * omega'`). This matrix can be visualized and will contain the influence
  of features to the classification on its principal axis. Other elements describe the correlation 
  between the corresponding features.
- 
- ## The UI
- 
- Coming soon!
- 
- ## Running GMLVQ
- 
- Coming soon!
- 
+  
  ## Literature & References
  
  Coming soon!
