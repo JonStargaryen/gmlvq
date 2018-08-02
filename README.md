@@ -1,4 +1,5 @@
 # Generalized Matrix Learning Vector Quantization
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1326272.svg)](https://doi.org/10.5281/zenodo.1326272)
 
 A Java implementation of the generalized matrix learning vector quantization, a prototype-based, 
 supervised learning technique.
@@ -10,7 +11,7 @@ The project is a plug-in for the [weka machine learning framework](http://www.cs
 Using the weka package manager:
 
 - download the [leatest WEKA version](https://www.cs.waikato.ac.nz/ml/weka/downloading.html)
-- download the GMLVQ package
+- download the [GMLVQ plugin zip](https://zenodo.org/record/1326272/files/gmlvq-v0.1.0-weka-plug-in.zip?download=1)
 - install and run the weka gui
 - choose `Tools` - `Package manager`
 - in the new window, click the `File/URL` button and locate the packaged GMLVQ downloaded before
