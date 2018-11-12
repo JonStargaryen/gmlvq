@@ -891,6 +891,11 @@ public class GMLVQCore implements Serializable {
             return this;
         }
 
+        public Builder costFunctionWeights(double[] costFunctionWeights) {
+            this.costFunctionWeights = costFunctionWeights;
+            return this;
+        }
+
         public Builder costFunctionWeights(String costFunctionWeightsString) {
             String[] split = costFunctionWeightsString.split(",");
             this.costFunctionWeights[0] = Double.parseDouble(split[0]);
