@@ -60,4 +60,12 @@ input data which contribute the most to the training process. This is realized b
   
  ## Literature & References
  
- Coming soon!
+When using the GMLVQ plugin, please cite:
+- Bittrich, S., Kaden, M., Leberecht, C., Kaiser, F., Villmann, T., & Labudde, D. (2019). Application of an interpretable classification model on Early Folding Residues during protein folding. BioData mining, 12(1), 1. [link](https://biodatamining.biomedcentral.com/articles/10.1186/s13040-018-0188-2)
+
+Additional references on GMLVQ:
+- Kaden, M., Lange, M., Nebel, D., Riedel, M., Geweniger, T., & Villmann, T. (2014). Aspects in classification learning-Review of recent developments in Learning Vector Quantization. Foundations of Computing and Decision Sciences, 39(2), 79-105. [link](https://www.degruyter.com/downloadpdf/j/fcds.2014.39.issue-2/fcds-2014-0006/fcds-2014-0006.pdf)
+- Bunte, K., Schneider, P., Hammer, B., Schleif, F. M., Villmann, T., & Biehl, M. (2012). Limited rank matrix learning, discriminative dimension reduction and visualization. Neural Networks, 26, 159-173. [link](https://core.ac.uk/download/pdf/148191531.pdf)
+- Kästner, M., Hammer, B., Biehl, M., & Villmann, T. (2012). Functional relevance learning in generalized learning vector quantization. Neurocomputing, 90, 85-95. [link](https://www.rug.nl/research/portal/files/2454313/2012NeurocompKastner.pdf)
+- Hammer, B., & Villmann, T. (2002). Generalized relevance learning vector quantization. Neural Networks, 15(8-9), 1059-1068. [link](https://www.researchgate.net/profile/Leonard_Goeirmanto/post/How_can_I_apply_generalized_learning_vector_quantization_GLVQ_for_cluster_unlabel_data/attachment/59d639d7c49f478072ea647b/AS:273721464426496@1442271690991/download/Neural+Networks%2C+Vol.15+Is.8+p.1059-1068.pdf)
+
